@@ -16,9 +16,9 @@ class CreateMechanicsTable extends Migration
         Schema::create('mechanics', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->text('comments');
-            $table->string('previous_jobs');
             $table->integer('mechanic_id');
+            $table->text('comments')->nullable();
+            $table->string('previous_jobs')->nullable();
             $table->timestamps();
         });
     }
