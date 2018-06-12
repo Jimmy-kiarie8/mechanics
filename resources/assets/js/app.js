@@ -11,7 +11,9 @@ window.Vue = require('vue');
 // import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueRouter from 'vue-router'
+import StarRating from 'vue-star-rating'
 
+Vue.component('star-rating', StarRating);
 Vue.use(VueRouter) 
 Vue.use(Vuetify)
 /**
@@ -19,16 +21,21 @@ Vue.use(Vuetify)
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
+// Vue.component('star-rating', VueStarRating.default);
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+
+Vue.component('file-management', require('./components/uploads/FileManagement.vue'));
+Vue.component('attachment-list', require('./components/uploads/AttachmentList.vue'));
 
 let myView = require('./components/view/View.vue')
 let myHeader = require('./components/include/Header.vue')
 let myUser = require('./components/users/User.vue')
+let myDocs = require('./components/uploads/Docs.vue')
 
 const routes = [
 	{path: '/', component: myView},
 	{path: '/users', component: myUser},
+	{path: '/docs', component: myDocs},
 ]
 const router = new VueRouter({
 // mode: 'history',
@@ -38,6 +45,6 @@ const app = new Vue({
     el: '#app',
     router,
     components: {
-    	myView, myUser, myHeader
+    	StarRating, myView, myUser, myHeader, myDocs
     }
 });

@@ -80,7 +80,7 @@ class UserController extends Controller
      */
     public function update(Request $request, Mechanics $mechanics, $id)
     {
-        return $request->all();
+        // return $request->all();
         $user = User::find($id);
         if ($request->location) {
             $location_new = $request->location;

@@ -1,39 +1,6 @@
 <template>
  <div>
-  <v-dialog v-model="commdialog2" max-width="800px" persistent>
-    <v-card>
-      <v-card-title>
-        Customer Feedback
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" @submit.prevent="update">
-          <v-container grid-list-xl fluid>
-            <v-layout wrap>
-                <star-rating  :increment="0.01" v-model="feedback.rating" :star-size="20"></star-rating>
-                <v-flex xs12>
-                  <v-text-field
-                  v-model="feedback.comment"
-                  color="blue"
-                  multi-line
-                  >
-                  <div slot="label">
-                    Comment <small>(optional)</small>
-                  </div>
-                </v-text-field>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click.native="commdialog2 = false">Close</v-btn>
-                  <v-btn color="blue darken-1" flat @click.native="commdialog">Save</v-btn>
-                </v-card-actions>
-                <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>  -->
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
   <!-- profile -->
   <v-dialog v-model="docsdialog2" fullscreen hide-overlay transition="dialog-bottom-transition">
     <v-card id="shipment_det">
@@ -47,57 +14,9 @@
         <span class="headline"></span>
       </v-card-title>
       <v-card-text>
-
-        <v-card>
-          <v-layout row>
-            <v-flex sm3 offset-sm1>
-              <img src="" alt="profile">
-              <star-rating  :read-only="true" :increment="0.01" v-model="rating" :star-size="20"></star-rating>
-              <p>{{seeDocuments.name}}</p>            
-              <p>{{seeDocuments.email}}</p>            
-              <p>{{seeDocuments.ratings}}</p>            
-            </v-flex>
-
-            <v-flex sm8>
-            <v-card style="max-height: 200px;overflow-y: scroll; border-left: 1px solid #333; background: #f9f9f9;">
-                <v-layout row>
-                  <v-flex xs12 sm10 offset-sm1>
-                    <v-card>
-                      <v-layout v-for="comment in AllComments" :key="comment.id">
-                        <v-flex sm2>
-                          <div v-for="user in Allusers" v-if="user.id === comment.user_id">commented By:{{ user.name }}</div>
-                        </v-flex>
-                        <v-flex sm3>
-                          On: {{ comment.created_at }}
-                        </v-flex>
-                        <v-flex sm3>
-                          {{ comment.comment }}
-                        </v-flex>
-                        <v-flex sm4>
-                          <star-rating  :read-only="true" :increment="0.01" v-model="comment.rating" :star-size="20"></star-rating>
-                        </v-flex>
-                      </v-layout>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-                <!-- <div v-for="comment in AllComments">
-                  <p>{{ comment.comment }}</p>
-                  <p><span>Commented By:</span>{{ comment.comment }}</p>
-                  <p v-for="comment in AllComments">On: <small>{{comment.created_at}}</small></p>
-                </div> -->
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-card>
-
-        <v-divider></v-divider>
-        <v-divider></v-divider>
-        <v-divider></v-divider>
-
-
         <v-container grid-list-md text-xs-center>
          <v-card-title>
-          <h3 class="text-center">Documents</h3>
+          <v-btn color="primary" flat @click="openUser">Profile</v-btn>
           <v-spacer></v-spacer>
           <v-text-field
           v-model="search"
@@ -107,6 +26,66 @@
           hide-details
           ></v-text-field>
         </v-card-title>
+        <v-card>
+          <v-layout>
+            <v-flex sm6>
+              <img src="" alt="profile">
+              <p>{{seeDocuments.name}}</p>            
+              <p>{{seeDocuments.email}}</p>            
+              <p>{{seeDocuments.ratings}}</p>            
+            </v-flex>
+            <v-divider></v-divider>
+            <v-divider></v-divider>
+
+            <v-flex sm6>
+              <div style="max-height: 400px;overflow-y: scroll; border-left: 1px solid #333; background: #f9f9f9;">
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+                <p>comments</p>
+              </div>
+            </v-flex>
+          </v-layout>
+        </v-card>
         <v-data-table
         :headers="proheaders"
         :items="Alldocs"
@@ -123,54 +102,18 @@
          <td class="justify-center layout px-0">
            <v-btn icon class="mx-0" @click="download(props.item)">
             <v-icon color="pink darken-2">cloud_upload</v-icon>
-          </v-btn>
+           </v-btn>
 
-        </td> 
-      </template>
-      <v-alert slot="no-results" :value="true" color="error" icon="warning">
+         </td> 
+       </template>
+       <v-alert slot="no-results" :value="true" color="error" icon="warning">
         Your search for "{{ search }}" found no results.
       </v-alert>
       <template slot="pageText" slot-scope="{ pageStart, pageStop }">
         From {{ pageStart }} to {{ pageStop }}
       </template>
     </v-data-table>
-
-    <v-divider></v-divider>
-    <v-divider></v-divider>
-    <v-divider></v-divider>
-
-
-    <!-- Jobs -->
-
-    <v-card-title>
-      <h3 class="text-center">Previous Jobs</h3>
-    </v-card-title>
-    <v-data-table
-    :headers="jobsheaders"
-    :items="Allusers"
-    counter
-    class="elevation-1"
-    >
-    <template slot="items" slot-scope="props">
-     <td>
-       {{ props.item.name }}
-     </td>
-     <td class="text-xs-right">{{ props.item.email }}</td>
-     <td class="text-xs-right">{{ props.item.created_at }}</td>
-     <td class="justify-center layout px-0">
-       <v-btn icon class="mx-0" @click="download(props.item)">
-        <v-icon color="pink darken-2">cloud_upload</v-icon>
-      </v-btn>
-
-    </td> 
-  </template>
-  <template slot="pageText" slot-scope="{ pageStart, pageStop }">
-    From {{ pageStart }} to {{ pageStop }}
-  </template>
-</v-data-table>
-<!-- Jobs -->
-
-</v-container>
+  </v-container>
 </v-card-text>
 </v-card>
 
@@ -358,9 +301,9 @@
             <v-btn icon class="mx-0" @click="editItem(props.item)">
               <v-icon color="blue darken-2">edit</v-icon>
             </v-btn>
-          <v-btn icon class="mx-0" @click="ratingMec(props.item)">
-            <v-icon color="blue darken-2" dark>star</v-icon>
-          </v-btn>
+          <!-- <v-btn icon class="mx-0" @click="UpdateItem(props.item)">
+            <v-icon color="blue darken-2" dark>save</v-icon>
+          </v-btn> -->
           <v-btn icon class="mx-0" @click="deleteItem(props.item)">
             <v-icon color="pink darken-2">delete</v-icon>
           </v-btn>
@@ -410,14 +353,6 @@ export default {
   }, 
   data() {
     return{
-      rating: 4,
-      jobsheaders: [
-      { text: 'Client Name', align: 'left', value: 'name'},
-      { text: 'Client Email', value: 'email' },
-      { text: 'Done on', value: 'created_at' },
-      { text: 'Actions', value: 'name', sortable: false }
-
-      ],
       proheaders: [
       { text: 'Name', align: 'left', value: 'name'},
       { text: 'description', value: 'description' },
@@ -428,14 +363,12 @@ export default {
       { text: 'Name', align: 'left', value: 'name'},
       { text: 'email', value: 'email' },
       { text: 'Id Number', value: 'id_no' },
-      { text: 'Phone Number', value: 'phone' },
       { text: 'Rating', value: 'rating' },
     // { text: 'Location', value: 'location' },
     // { text: 'Current Status', value: 'current_status' },
     { text: 'Status', value: 'status' },
     { text: 'Actions', value: 'name', sortable: false }
     ],
-    feedback: {},
     search: '',
     e1: true,
     loader: false,
@@ -444,12 +377,10 @@ export default {
     dispEdit: false,
     pdialog2: false,
     snackbar: false,
-    commdialog2: false,
     timeout: 5000,
     color: '',
     message: '',
     Allusers: [],
-    AllComments: {},
     docNo: {},
     Alldocs: [],
     editedItem: {},
@@ -512,30 +443,6 @@ methods: {
     this.dispAdd= this.docsdialog2 =  false
   },
 
-  // Ratings && Comments
-  commdialog() {
-    // this.commdialog2 = true
-    axios.post(`/comments/${this.feedback.id}`, this.feedback)
-    .then((response) => {
-
-        this.message = 'Commented'
-        this.color = 'indigo'
-        this.snackbar = true
-    })
-      .catch((error) => {
-        this.errors = error.response.data.errors
-        this.message = 'something went wrong'
-        this.color = 'red'
-        this.snackbar = true
-      })
-  },
-  ratingMec(item) {
-    this.feedback = Object.assign({}, item)
-    this.editedIndex = this.Allusers.indexOf(item)
-    // console.log(this.editedItem);
-    this.commdialog2 = true
-  },
-
   // documents
 
   seeDocs(item) {
@@ -586,24 +493,15 @@ methods: {
 },
 mounted() {
   this.loader=true
-  axios.post('getComments')
-  .then((response) => {
-    this.AllComments = response.data
-  })
-  .catch((error) => {
-    this.errors = error.response.data.errors
-  })
-
-
   axios.post('getUsers')
   .then((response) => {
-    this.Allusers = response.data
+    this.Allusers = this.temp = response.data
+    this.loader=false
   })
   .catch((error) => {
     this.errors = error.response.data.errors
+    this.loader=false
   })
-
-
   axios.post('getCategory')
   .then((response) => {
     this.Alldocs = response.data

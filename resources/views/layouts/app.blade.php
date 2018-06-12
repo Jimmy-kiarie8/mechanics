@@ -21,6 +21,9 @@
     {{-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous"> --}}
     <!-- Styles -->
     <link href="{{ asset('vuetify/css/vuetify.min.css') }}" rel="stylesheet">
+    {{-- <script src="https://unpkg.com/vue-star-rating/dist/star-rating.min.js"></script> --}}
+
+
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 </head>
