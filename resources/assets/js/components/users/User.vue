@@ -34,287 +34,6 @@
       </v-card-text>
     </v-card>
   </v-dialog>
-  <!-- profile -->
-  <v-dialog v-model="docsdialog2" fullscreen hide-overlay transition="dialog-bottom-transition">
-    <v-card id="shipment_det">
-      <v-card-title>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click.native="docsdialog2 = false">
-            <v-icon color="black">close</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-        </v-toolbar>
-        <span class="headline"></span>
-      </v-card-title>
-      <v-card-text>
-
-        <v-card>
-          <v-layout row>
-            <v-flex sm3 offset-sm1>
-              <img src="" alt="profile">
-              <star-rating  :read-only="true" :increment="0.01" v-model="rating" :star-size="20"></star-rating>
-              <p>{{seeDocuments.name}}</p>            
-              <p>{{seeDocuments.email}}</p>            
-              <p>{{seeDocuments.ratings}}</p>            
-            </v-flex>
-
-            <v-flex sm8>
-            <v-card style="max-height: 200px;overflow-y: scroll; border-left: 1px solid #333; background: #f9f9f9;">
-                <v-layout row>
-                  <v-flex xs12 sm10 offset-sm1>
-                    <v-card>
-                      <v-layout v-for="comment in AllComments" :key="comment.id">
-                        <v-flex sm2>
-                          <div v-for="user in Allusers" v-if="user.id === comment.user_id">commented By:{{ user.name }}</div>
-                        </v-flex>
-                        <v-flex sm3>
-                          On: {{ comment.created_at }}
-                        </v-flex>
-                        <v-flex sm3>
-                          {{ comment.comment }}
-                        </v-flex>
-                        <v-flex sm4>
-                          <star-rating  :read-only="true" :increment="0.01" v-model="comment.rating" :star-size="20"></star-rating>
-                        </v-flex>
-                      </v-layout>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-                <!-- <div v-for="comment in AllComments">
-                  <p>{{ comment.comment }}</p>
-                  <p><span>Commented By:</span>{{ comment.comment }}</p>
-                  <p v-for="comment in AllComments">On: <small>{{comment.created_at}}</small></p>
-                </div> -->
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-card>
-
-        <v-divider></v-divider>
-        <v-divider></v-divider>
-        <v-divider></v-divider>
-
-
-        <v-container grid-list-md text-xs-center>
-         <v-card-title>
-          <h3 class="text-center">Documents</h3>
-          <v-spacer></v-spacer>
-          <v-text-field
-          v-model="search"
-          append-icon="search"
-          label="Search"
-          single-line
-          hide-details
-          ></v-text-field>
-        </v-card-title>
-        <v-data-table
-        :headers="proheaders"
-        :items="Alldocs"
-        :search="search"
-        counter
-        class="elevation-1"
-        >
-        <template slot="items" slot-scope="props">
-         <td>
-           {{ props.item.name }}
-         </td>
-         <td class="text-xs-right">{{ props.item.description }}</td>
-         <td class="text-xs-right">{{ props.item.created_at }}</td>
-         <td class="justify-center layout px-0">
-           <v-btn icon class="mx-0" @click="download(props.item)">
-            <v-icon color="pink darken-2">cloud_upload</v-icon>
-          </v-btn>
-
-        </td> 
-      </template>
-      <v-alert slot="no-results" :value="true" color="error" icon="warning">
-        Your search for "{{ search }}" found no results.
-      </v-alert>
-      <template slot="pageText" slot-scope="{ pageStart, pageStop }">
-        From {{ pageStart }} to {{ pageStop }}
-      </template>
-    </v-data-table>
-
-    <v-divider></v-divider>
-    <v-divider></v-divider>
-    <v-divider></v-divider>
-
-
-    <!-- Jobs -->
-
-    <v-card-title>
-      <h3 class="text-center">Previous Jobs</h3>
-    </v-card-title>
-    <v-data-table
-    :headers="jobsheaders"
-    :items="Allusers"
-    counter
-    class="elevation-1"
-    >
-    <template slot="items" slot-scope="props">
-     <td>
-       {{ props.item.name }}
-     </td>
-     <td class="text-xs-right">{{ props.item.email }}</td>
-     <td class="text-xs-right">{{ props.item.created_at }}</td>
-     <td class="justify-center layout px-0">
-       <v-btn icon class="mx-0" @click="download(props.item)">
-        <v-icon color="pink darken-2">cloud_upload</v-icon>
-      </v-btn>
-
-    </td> 
-  </template>
-  <template slot="pageText" slot-scope="{ pageStart, pageStop }">
-    From {{ pageStart }} to {{ pageStop }}
-  </template>
-</v-data-table>
-<!-- Jobs -->
-
-</v-container>
-</v-card-text>
-</v-card>
-
-</v-dialog>
-<!-- profile -->
-
-<!-- Edit User -->
-<v-dialog v-model="pdialog2" max-width="800px" persistent>
-  <v-card>
-    <v-card-title>
-      {{ editedItem.name }}
-    </v-card-title>
-    <v-card-text>
-      <v-form ref="form" @submit.prevent="update">
-        <v-container grid-list-xl fluid>
-          <v-layout wrap>
-            <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItem.name"
-              :rules="rules.name"
-              color="purple darken-2"
-              label="Full name"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>  -->
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItem.email"
-              :rules="emailRules"
-              color="blue darken-2"
-              label="Email"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.email">{{ errors.email[0] }}</small> -->
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItem.id_no"
-              color="blue darken-2"
-              label="Id Number"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.email">{{ errors.email[0] }}</small> -->
-            </v-flex>
-            <v-flex  xs12 sm6>
-              <v-text-field
-              :append-icon="e1 ? 'visibility' : 'visibility_off'"
-              :append-icon-cb="() => (e1 = !e1)"
-              :type="e1 ? 'password' : 'text'"
-              v-model="editedItem.password"
-              name="input-10-2"
-              label="Enter your password"
-              hint="At least 8 characters"
-              min="8"
-              value=""
-              class="input-group--focused"
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.password">{{ errors.password[0] }}</small> -->
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItem.address"
-              :rules="rules.name"
-              color="blue darken-2"
-              label="Address"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.address">{{ errors.address[0] }}</small>  -->
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItem.city"
-              :rules="rules.name"
-              color="blue darken-2"
-              label="City"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small> -->
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItem.city"
-              :rules="rules.name"
-              color="blue darken-2"
-              label="City"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small> -->
-            </v-flex>
-            <v-flex xs12 sm6>
-             <v-slider
-             v-model="editedItem.age"
-             :rules="rules.age"
-             color="orange"
-             label="Age"
-             hint="Be honest"
-             min="1"
-             max="100"
-             thumb-label
-             ></v-slider>
-           </v-flex>
-           <v-flex xs12 sm6>
-            <v-text-field
-            v-model="editedItem.country"
-            :rules="rules.name"
-            color="blue darken-2"
-            label="Country"
-            required
-            ></v-text-field>
-            <!-- <small class="has-text-danger" v-if="errors.country">{{ errors.country[0] }}</small> -->
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-text-field
-            v-model="editedItem.phone"
-            :rules="rules.name"
-            color="blue darken-2"
-            label="Phone"
-            required
-            ></v-text-field>
-            <!-- <small class="has-text-danger" v-if="errors.phone">{{ errors.phone[0] }}</small> -->
-          </v-flex>
-              <!-- <div class="form-group">
-                <vue-google-autocomplete
-                ref="address"
-                id="map"
-                classname="form-control col-md-12"
-                placeholder="Please type your address"
-                v-on:placechanged="getAddressData"
-                country="ke"
-                ></vue-google-autocomplete>
-              </div> -->
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" flat @click.stop="pdialog2=false">Close</v-btn>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" flat @click="update">Add</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <!-- Edit User -->
 
   <v-content>
    <v-container fluid fill-height>
@@ -394,36 +113,23 @@ v-model="snackbar"
 </v-snackbar>
 </v-content>
 <AddUser @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert"></AddUser>
-<!-- <ShowUser @closeRequest="close" :openShowRequest="dispShow"></ShowUser> -->
-<!-- <EditUser @closeRequest="close" :openEditRequest="dispEdit" @alertRequest="showAlert"></EditUser> -->
+<EditUser @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem"></EditUser>
+<ShowUserProfile @closeRequest="close" :openProRequest="docsdialog2" :users="Allusers" :docsPass="seeDocuments"></ShowUserProfile>
 </div>
 </template>
 
 <script>
 let AddUser = require('./AddUser.vue')
-// let ShowUser = require('./ShowUser.vue')
-// let EditUserUser = require('./EditUser.vue')
+let ShowUserProfile = require('./ShowUserProfile.vue')
+let EditUser = require('./EditUser.vue')
 export default {
   props: ['user', 'role'],
   components: {
-    AddUser, /*ShowUser, EditUser*/
+    AddUser, ShowUserProfile, EditUser
   }, 
   data() {
     return{
       rating: 4,
-      jobsheaders: [
-      { text: 'Client Name', align: 'left', value: 'name'},
-      { text: 'Client Email', value: 'email' },
-      { text: 'Done on', value: 'created_at' },
-      { text: 'Actions', value: 'name', sortable: false }
-
-      ],
-      proheaders: [
-      { text: 'Name', align: 'left', value: 'name'},
-      { text: 'description', value: 'description' },
-      { text: 'Uploaded on', value: 'created_at' },
-      { text: 'Actions', value: 'name', sortable: false }
-      ],
       headers: [
       { text: 'Name', align: 'left', value: 'name'},
       { text: 'email', value: 'email' },
@@ -441,15 +147,14 @@ export default {
     loader: false,
     dispAdd: false,
     docsdialog2: false,
-    dispEdit: false,
     pdialog2: false,
     snackbar: false,
     commdialog2: false,
+    pdialog: false,
     timeout: 5000,
     color: '',
     message: '',
     Allusers: [],
-    AllComments: {},
     docNo: {},
     Alldocs: [],
     editedItem: {},
@@ -479,10 +184,6 @@ methods: {
     this.pdialog2 = true
   },
 
-  update() {
-    axios.patch(`/users/${this.editedItem.id}`, {form: this.editedItem, location: this.address})
-  },
-
   showAlert(){
     this.message = 'Successifully Added';
     this.snackbar = true;
@@ -509,7 +210,7 @@ methods: {
     }
   },
   close() {
-    this.dispAdd= this.docsdialog2 =  false
+    this.dispAdd= this.docsdialog2 = this.pdialog2 = false
   },
 
   // Ratings && Comments
@@ -541,60 +242,12 @@ methods: {
   seeDocs(item) {
     this.seeDocuments = Object.assign({}, item)
     this.editedIndex = this.Allusers.indexOf(item)
-    console.log(this.seeDocuments);
+    // console.log(this.seeDocuments);
     this.docsdialog2 = true
   },
-
-  download(item) {
-   this.docNo = Object.assign({}, item)
-   this.editedIndex = this.Alldocs.indexOf(item)
-   /*axios.get(`/${this.seeDocuments.id}`)
-   .then((response) => {
-    console.log(reaponse);
-     this.message = 'Successifully Added';
-     this.snackbar = true;
-     this.color = 'indigo';
-   })  
-   .catch((error) => {
-     this.errors = error.response.data.errors
-     this.message = 'failed ';
-     this.snackbar = true;
-     this.color = 'red';
-   })*/
-   axios({
-     url: 'http://mechanics.dev/storage/attachments/LmztVebBIu9akwN97ZHUtDzQUgsPFB1odUZGCzkA.pdf',
-     method: 'GET',
-     responseType: 'blob', // important
-   }).then((response) => {
-     this.message = 'Successifully Added';
-     this.snackbar = true;
-     this.color = 'indigo';
-     const url = window.URL.createObjectURL(new Blob([response.data]));
-     const link = document.createElement('a');
-     link.href = url;
-     link.setAttribute('download', 'file.pdf');
-     document.body.appendChild(link);
-     link.click();
-   })  
-   .catch((error) => {
-     this.errors = error.response.data.errors
-     this.message = 'failed ';
-     this.snackbar = true;
-     this.color = 'red';
-   });
- },
 },
 mounted() {
   this.loader=true
-  axios.post('getComments')
-  .then((response) => {
-    this.AllComments = response.data
-  })
-  .catch((error) => {
-    this.errors = error.response.data.errors
-  })
-
-
   axios.post('getUsers')
   .then((response) => {
     this.Allusers = response.data

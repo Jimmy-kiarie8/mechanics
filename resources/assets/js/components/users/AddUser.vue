@@ -15,7 +15,7 @@
                       <v-text-field
                       v-model="form.name"
                       :rules="rules.name"
-                      color="purple darken-2"
+                      color="blue darken-2"
                       label="Full name"
                       required
                       ></v-text-field>
@@ -64,16 +64,6 @@
                       required
                       ></v-text-field>
                     <!-- <small class="has-text-danger" v-if="errors.address">{{ errors.address[0] }}</small> -->
-                    </v-flex>
-                    <v-flex xs12 sm6>
-                      <v-text-field
-                      v-model="form.city"
-                      :rules="rules.name"
-                      color="blue darken-2"
-                      label="City"
-                      required
-                      ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small> -->
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field

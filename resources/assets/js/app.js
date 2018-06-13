@@ -31,11 +31,17 @@ let myView = require('./components/view/View.vue')
 let myHeader = require('./components/include/Header.vue')
 let myUser = require('./components/users/User.vue')
 let myDocs = require('./components/uploads/Docs.vue')
+let myProfile = require('./components/users/Profile.vue')
+let myResume = require('./components/resum/Resume.vue')
+let myResumeHome = require('./components/resum/Home.vue')
 
 const routes = [
 	{path: '/', component: myView},
 	{path: '/users', component: myUser},
 	{path: '/docs', component: myDocs},
+	{path: '/profile', component: myProfile},
+	{path: '/resume', component: myResume},
+	{path: '/resumeHome', component: myResumeHome},
 ]
 const router = new VueRouter({
 // mode: 'history',
@@ -45,6 +51,6 @@ const app = new Vue({
     el: '#app',
     router,
     components: {
-    	StarRating, myView, myUser, myHeader, myDocs
+    	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, myResumeHome
     }
 });

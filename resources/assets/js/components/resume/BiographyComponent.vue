@@ -1,0 +1,26 @@
+<template>
+	<div class="content">
+  <h1 class="headline">
+    <span>
+      <!-- <span class="icon">
+        <i class="fa fa-user"></i>
+      </span>{{$t("message.about")}} -->
+    </span>
+  </h1>
+  <p class="has-text-justified" v-html="biography.text"></p>
+</div>
+
+</template>
+
+<script>
+export default {
+  /*computed: {
+    biography () {
+      return this.$store.getters.getSection('biography')
+    }
+  }*/
+}
+</script>
+
+<style scoped>
+</style>

@@ -28,6 +28,11 @@ class CreateUsersTable extends Migration
             $table->string('good_coduct')->nullable();
             $table->string('rating')->nullable();
             $table->integer('age')->nullable();
+            $table->string('profile')->nullable();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
+            $table->string('county')->nullable();
+            $table->string('address')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

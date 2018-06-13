@@ -41,7 +41,7 @@
                   <v-layout wrap>
                     <v-flex xs12 sm6>
                       <v-text-field
-                      v-model="LogedUser.name"
+                      v-model="user.name"
                       :rules="rules.name"
                       color="purple darken-2"
                       label="Full name"
@@ -50,7 +50,7 @@
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
-                      v-model="LogedUser.email"
+                      v-model="user.email"
                       :rules="emailRules"
                       color="blue darken-2"
                       label="Email"
@@ -62,7 +62,7 @@
                       :append-icon="e1 ? 'visibility_off' : 'visibility'"
                       :append-icon-cb="() => (e1 = !e1)"
                       :type="e1 ? 'password' : 'text'"
-                      v-model="LogedUser.password"
+                      v-model="user.password"
                       name="input-10-2"
                       label="Enter your password"
                       hint="At least 8 characters"
@@ -73,7 +73,7 @@
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
-                      v-model="LogedUser.address"
+                      v-model="user.address"
                       :rules="rules.name"
                       color="blue darken-2"
                       label="Address"
@@ -82,7 +82,7 @@
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
-                      v-model="LogedUser.city"
+                      v-model="user.city"
                       :rules="rules.name"
                       color="blue darken-2"
                       label="City"
@@ -91,7 +91,7 @@
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
-                      v-model="LogedUser.country"
+                      v-model="user.country"
                       :rules="rules.name"
                       color="blue darken-2"
                       label="Country"
@@ -100,7 +100,7 @@
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
-                      v-model="LogedUser.phone"
+                      v-model="user.phone"
                       :rules="rules.name"
                       color="blue darken-2"
                       label="Phone"
@@ -108,24 +108,27 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs12 sm6>
-                      <v-text-field
-                      v-model="LogedUser.zipcode"
-                      :rules="rules.name"
-                      color="blue darken-2"
-                      label="Zip Code"
-                      required
-                      ></v-text-field>
-                    </v-flex>
-
-                    <v-flex xs12 sm6>
-                      <v-text-field
-                      v-model="LogedUser.branch"
-                      :rules="rules.name"
-                      color="blue darken-2"
-                      label="Branch"
-                      required
-                      ></v-text-field>
-                    </v-flex>
+                       <v-slider
+                         v-model="user.age"
+                         :rules="rules.age"
+                         color="orange"
+                         label="Age"
+                         hint="Be honest"
+                         min="1"
+                         max="100"
+                         thumb-label
+                       ></v-slider>
+                     </v-flex>
+                    <div class="form-group">
+                      <vue-google-autocomplete
+                      ref="address"
+                      id="map"
+                      classname="form-control col-md-12"
+                      placeholder="Please type your address"
+                      v-on:placechanged="getAddressData"
+                      country="ke"
+                      ></vue-google-autocomplete>
+                    </div>
                   </v-layout>
                 </v-container>
                 <v-card-actions>
@@ -142,9 +145,6 @@
             </v-card>
           </v-flex>
           <!-- User Form -->
-
-
-
         </v-layout>
       </v-layout>
     </v-container>
@@ -153,25 +153,24 @@
 </template>
 
 <script>
+import VueGoogleAutocomplete from 'vue-google-autocomplete'
 export default {
   props: ['user'],
+  components: {
+    VueGoogleAutocomplete
+  },
   data () {
     const defaultForm = Object.freeze({
       name: '',
       password: '',
       email: '',
       phone: null,
-      zipcode: null,
-      branch: '',
-      address: '',
-      city: '',
-      country: '',
     })
     return {
+      address: '',
       imagePlaced: false,
       defaultForm,
       avatar: '',
-      LogedUser: {},
       e1: true,
       snackbar: false,
       loader: false,
@@ -181,6 +180,9 @@ export default {
           return !!v || 'E-mail is required'
         },
         v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+      ],
+      age: [
+        val => val < 10 || `I don't believe you!`
       ],
       rules: {
         name: [val => (val || '').length > 0 || 'This field is required']
@@ -222,7 +224,7 @@ export default {
     },
 
     upload() {
-      axios.post(`/profile/${this.LogedUser.id}`, this.file)
+      axios.post(`/profile/${this.user.id}`, this.file)
       .then((response) => {
         console.log(response);
         this.imagePlaced = false;
@@ -233,15 +235,15 @@ export default {
       })
     },
     cancle() {
-      this.avatar = this.LogedUser.profile;
+      this.avatar = this.user.profile;
       this.imagePlaced = false;
     },
     resetForm () {
-        this.LogedUser = Object.assign({}, this.defaultForm)
-        this.$refs.LogedUser.reset()
+        this.user = Object.assign({}, this.defaultForm)
+        this.$refs.user.reset()
       },
     update() {
-        axios.patch(`/users/${this.LogedUser.id}`, this.$data.LogedUser).
+        axios.post('/userUpdate', {user: this.user,  location: this.address}).
         then((response) => {
           // console.log(response);
               this.loader=false
@@ -255,34 +257,17 @@ export default {
         this.errors = error.response.data.errors
         this.loader=false
       })
-    }
+    },
+
+    getAddressData: function (addressData, placeResultData, id) {
+      this.address = addressData;
+    },
   },
-mounted() {
-  this.loader=true
-  axios.post('getLogedinUsers')
-  .then((response) => {
-    this.LogedUser = response.data
-    this.avatar = response.data.profile
-    this.loader=false
-  })
-  .catch((error) => {
-      this.errors = error.response.data.errors
-      this.loader=false
-    })
-},
 
   computed: {
    formIsValid () {
      return (
-       this.LogedUser.name &&
-       this.LogedUser.email &&
-       this.LogedUser.phone &&
-       this.LogedUser.password &&
-       this.LogedUser.zipcode &&
-       this.LogedUser.branch &&
-       this.LogedUser.address &&
-       this.LogedUser.city &&
-       this.LogedUser.country
+       this.user.name 
      )
    },
  },

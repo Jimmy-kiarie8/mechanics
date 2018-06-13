@@ -12,6 +12,13 @@
 */
 
 
+Route::get('/cv', function () {
+    return view('Cv');
+});
+
+
+
+
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/manage', function () {
@@ -33,6 +40,8 @@ Route::resource('file', 'HomeController');
 
 
 Route::post('/getUsers', 'UserController@getUsers')->name('getUsers');
+Route::post('/profile/{id}', 'UserController@profile')->name('profile');
+Route::post('/userUpdate', 'UserController@userUpdate')->name('userUpdate');
 
 
 Route::post('/attachments/store', 'HomeController@store')->name('store-attachments');
@@ -48,3 +57,7 @@ Route::post('/getLogedDocs', 'CategoryController@getLogedDocs')->name('getLogedD
 Route::post('/comments/{id}', 'CommentsController@comments')->name('comments');
 Route::post('/getComments', 'CommentsController@getComments')->name('getComments');
 
+
+
+// CV
+Route::post('/experience/{id}', 'ResumeController@experience')->name('experience');
