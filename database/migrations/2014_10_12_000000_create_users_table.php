@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->string('location')->nullable();
+            $table->text('location')->nullable();
             $table->string('id_no')->nullable();
             $table->string('status')->nullable();
             $table->string('current_status')->nullable();
@@ -33,6 +33,9 @@ class CreateUsersTable extends Migration
             $table->string('city')->nullable();
             $table->string('county')->nullable();
             $table->string('address')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('locality')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -47,27 +47,19 @@
             </div>
           </div>
         </router-link>
-        <router-link to="/Shipments" class="list__tile list__tile--link">
+        <router-link to="/home" class="list__tile list__tile--link">
           <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
           <div class="list__tile__content">
             <div class="list__tile__title">
-              Manage Shipments
+              Manage Mechanics
             </div>
           </div>
         </router-link>
-        <router-link to="/companies" class="list__tile list__tile--link">
+        <router-link to="/resume" class="list__tile list__tile--link">
           <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
           <div class="list__tile__content">
             <div class="list__tile__title">
-              Manage Companies
-            </div>
-          </div>
-        </router-link>
-        <router-link to="/containers" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
-          <div class="list__tile__content">
-            <div class="list__tile__title">
-              Manage Containers
+              Manage Resume
             </div>
           </div>
         </router-link>
@@ -79,22 +71,6 @@
             </div>
           </div>
         </router-link>
-        <router-link to="/subscribers" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">email</i></div>
-          <div class="list__tile__content">
-            <div class="list__tile__title">
-              Manage Subscrinbers
-            </div>
-          </div>
-        </router-link>
-        <router-link to="/customers" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
-          <div class="list__tile__content">
-            <div class="list__tile__title">
-              Manage Customers
-            </div>
-          </div>
-        </router-link>
         <router-link to="/profile" class="list__tile list__tile--link">
           <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
           <div class="list__tile__content">
@@ -103,30 +79,6 @@
             </div>
           </div>
         </router-link>
-        <router-link to="/scanner" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
-          <div class="list__tile__content">
-            <div class="list__tile__title">
-              Scan Shipments
-            </div>
-          </div>
-        </router-link>
-        <router-link to="/branches" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
-          <div class="list__tile__content">
-            <div class="list__tile__title">
-              Manage Branches
-            </div>
-          </div>
-        </router-link>
-        <a href="http://courier.dev/reports" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">info</i></div>
-          <div class="list__tile__content">
-            <div class="list__tile__title">
-              Reports
-            </div>
-          </div>
-        </a>
       </v-card>
 
     </template> 
@@ -217,13 +169,13 @@ export default {
     }
   },
   mounted() {  
-    axios.post('getLogo')
+    /*axios.post('getLogo')
     .then((response) => {
       this.company = response.data
     })
     .catch((error) => {
         this.errors = error.response.data.errors
-      })
+      })*/
   },
   }
   </script>

@@ -6,7 +6,7 @@
  */
 
 require('./bootstrap');
-
+ 
 window.Vue = require('vue');
 // import Vue from 'vue'
 import Vuetify from 'vuetify'
@@ -16,7 +16,7 @@ import StarRating from 'vue-star-rating'
 Vue.component('star-rating', StarRating);
 Vue.use(VueRouter) 
 Vue.use(Vuetify)
-/**
+/** 
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
@@ -34,6 +34,7 @@ let myDocs = require('./components/uploads/Docs.vue')
 let myProfile = require('./components/users/Profile.vue')
 let myResume = require('./components/resum/Resume.vue')
 let myResumeHome = require('./components/resum/Home.vue')
+let myJob = require('./components/jobs/Job.vue')
 
 const routes = [
 	{path: '/', component: myView},
@@ -41,7 +42,8 @@ const routes = [
 	{path: '/docs', component: myDocs},
 	{path: '/profile', component: myProfile},
 	{path: '/resume', component: myResume},
-	{path: '/resumeHome', component: myResumeHome},
+	{path: '/home', component: myResumeHome},
+	{path: '/jobs', component: myJob},
 ]
 const router = new VueRouter({
 // mode: 'history',
@@ -51,6 +53,6 @@ const app = new Vue({
     el: '#app',
     router,
     components: {
-    	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, myResumeHome
+    	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, myResumeHome, myJob
     }
 });

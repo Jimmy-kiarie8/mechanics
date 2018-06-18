@@ -8,10 +8,24 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+
+    <link rel="manifest" href="{{ asset('js/manifest.json') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Vuesume">
+    <meta name="theme-color" content="#3273dc">
+    <meta name="msapplication-navbutton-color" content="#3273dc">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-starturl" content="/">
+
+    
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+    {{-- <link href="{{ asset('css/bulma.css') }}" rel="stylesheet"> --}}
+    <link href="{{ asset('css/base.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">

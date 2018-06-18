@@ -1,40 +1,5 @@
 <template>
  <div>
-  <v-dialog v-model="commdialog2" max-width="800px" persistent>
-    <v-card>
-      <v-card-title>
-        Customer Feedback
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" @submit.prevent="update">
-          <v-container grid-list-xl fluid>
-            <v-layout wrap>
-                <star-rating  :increment="0.01" v-model="feedback.rating" :star-size="20"></star-rating>
-                <v-flex xs12>
-                  <v-text-field
-                  v-model="feedback.comment"
-                  color="blue"
-                  multi-line
-                  >
-                  <div slot="label">
-                    Comment <small>(optional)</small>
-                  </div>
-                </v-text-field>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click.native="commdialog2 = false">Close</v-btn>
-                  <v-btn color="blue darken-1" flat @click.native="commdialog">Save</v-btn>
-                </v-card-actions>
-                <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>  -->
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
-
   <v-content>
    <v-container fluid fill-height>
     <div v-show="loader" style="text-align: center">
@@ -45,7 +10,7 @@
        <!-- users display -->
        <div v-show="!loader">
         <v-card-title>
-         <v-btn color="primary" flat @click="openUser">Add User</v-btn>
+         <!-- <v-btn color="primary" flat @click="openUser">Add Job</v-btn> -->
          <v-spacer></v-spacer>
          <v-text-field
          v-model="search"
@@ -74,19 +39,12 @@
          <!--   <td class="text-xs-right">{{ props.item.current_status }}</td> -->
            <td class="text-xs-right">{{ props.item.status }}</td>
            <td class="justify-center layout px-0">
-            <v-btn icon class="mx-0" @click="editItem(props.item)">
-              <v-icon color="blue darken-2">edit</v-icon>
+            <v-btn icon class="mx-0" @click="giveJob(props.item)">
+              <v-icon color="blue darken-2">add</v-icon>
             </v-btn>
-          <v-btn icon class="mx-0" @click="ratingMec(props.item)">
-            <v-icon color="blue darken-2" dark>star</v-icon>
-          </v-btn>
-          <v-btn icon class="mx-0" @click="deleteItem(props.item)">
-            <v-icon color="pink darken-2">delete</v-icon>
-          </v-btn>
-          <v-btn icon class="mx-0" @click="seeDocs(props.item)">
-            <v-icon color="blue darken-2">visibility</v-icon>
-          </v-btn>
-          
+            <v-btn icon class="mx-0" @click="ShowJobSt(props.item)">
+              <v-icon color="blue darken-2">visibility</v-icon>
+            </v-btn>
         </td> 
       </template>
       <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -112,20 +70,20 @@ v-model="snackbar"
 <v-icon dark right>check_circle</v-icon>
 </v-snackbar>
 </v-content>
-<AddUser @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert"></AddUser>
-<EditUser @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem"></EditUser>
-<ShowUserProfile @closeRequest="close" :openProRequest="docsdialog2" :users="Allusers" :docsPass="seeDocuments"></ShowUserProfile>
+<AddJob @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert" :editedItemCon="editedItem"></AddJob>
+<EditJob @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem"></EditJob>
+<JobShow @closeRequest="close" :AllJobsDisp="JobsDisp" :openRequest="JobDialog" :users="Allusers" :editedItemCon="editedItem"></JobShow>
 </div>
 </template>
 
 <script>
-let AddUser = require('./AddUser.vue')
-let ShowUserProfile = require('./ShowUserProfile.vue')
-let EditUser = require('./EditUser.vue')
+let AddJob = require('./AddJob.vue')
+let JobShow = require('./JobShow.vue')
+let EditJob = require('./EditJob.vue')
 export default {
   props: ['user', 'role'],
   components: {
-    AddUser, ShowUserProfile, EditUser
+    AddJob, JobShow, EditJob
   }, 
   data() {
     return{
@@ -147,19 +105,17 @@ export default {
     e1: true,
     loader: false,
     dispAdd: false,
-    docsdialog2: false,
+    JobDialog: false,
     pdialog2: false,
     snackbar: false,
-    commdialog2: false,
     pdialog: false,
     timeout: 5000,
     color: '',
     message: '',
     Allusers: [],
-    docNo: {},
     Alldocs: [],
     editedItem: {},
-    seeDocuments: {},
+    JobsDisp: [],
     emailRules: [
     v => {
       return !!v || 'E-mail is required'
@@ -175,76 +131,34 @@ export default {
   }
 },
 methods: {  
-  openUser(){
-    this.dispAdd  = true
-  },
-  editItem(item) {
+  giveJob(item) {
     this.editedItem = Object.assign({}, item)
     this.editedIndex = this.Allusers.indexOf(item)
     // console.log(this.editedItem);
-    this.pdialog2 = true
+    this.dispAdd = true
+  },
+  ShowJobSt(item) {
+    this.editedItem = Object.assign({}, item)
+    this.editedIndex = this.Allusers.indexOf(item)
+    // console.log(this.editedItem);
+    this.JobDialog = true
+
+    axios.post(`getJobs/${this.editedItem.id}`)
+    .then((response) => {
+      this.JobsDisp = response.data
+    })
+    .catch((error) => {
+      this.errors = error.response.data.errors
+    })
   },
 
   showAlert(){
     this.message = 'Successifully Added';
     this.snackbar = true;
-    this.color = black;
-  },
-  del(key, id) {
-    if (confirm('Are you sure you want to delete this item?')) {
-      this.loader = true
-      axios.delete(`/users/${id}`)
-      .then((response) => {
-        this.Allusers.splice(index, 1)
-        this.loader = false
-        this.message = 'deleted successifully'
-        this.color = 'red'
-        this.snackbar = true
-      })
-      .catch((error) => {
-        this.errors = error.response.data.errors
-        this.loader = false
-        this.message = 'something went wrong'
-        this.color = 'red'
-        this.snackbar = true
-      })
-    }
+    this.color = indigo;
   },
   close() {
-    this.dispAdd= this.docsdialog2 = this.pdialog2 = false
-  },
-
-  // Ratings && Comments
-  commdialog() {
-    // this.commdialog2 = true
-    axios.post(`/comments/${this.feedback.id}`, this.feedback)
-    .then((response) => {
-
-        this.message = 'Commented'
-        this.color = 'indigo'
-        this.snackbar = true
-    })
-      .catch((error) => {
-        this.errors = error.response.data.errors
-        this.message = 'something went wrong'
-        this.color = 'red'
-        this.snackbar = true
-      })
-  },
-  ratingMec(item) {
-    this.feedback = Object.assign({}, item)
-    this.editedIndex = this.Allusers.indexOf(item)
-    // console.log(this.editedItem);
-    this.commdialog2 = true
-  },
-
-  // documents
-
-  seeDocs(item) {
-    this.seeDocuments = Object.assign({}, item)
-    this.editedIndex = this.Allusers.indexOf(item)
-    // console.log(this.seeDocuments);
-    this.docsdialog2 = true
+    this.dispAdd= this.JobDialog = this.pdialog2 = false
   },
 },
 mounted() {

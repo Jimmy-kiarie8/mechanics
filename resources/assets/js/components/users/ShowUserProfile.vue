@@ -1,8 +1,31 @@
 <template>
 	<div>
+		<v-layout row justify-center>
+			<v-dialog v-model="detailsModal" persistent max-width="900">
+				<v-card>
+					<v-card-title class="headline">Job</v-card-title>
+					<v-card-text>
+						<div class="col-md-12 col-sm-12">
+						  <ul class="list-group" v-for="job in AllJobs">
+						    <li class="list-group-item row active">
+						      <label class="col-md-5 col-lg-5"><b>User</b></label> {{ job.user_id }}
+						    </li>
+
+						    <li class="list-group-item row">
+						      <label class="col-md-5 col-lg-5"><b>Mechanic</b></label> {{ job.mechanic_id }}
+						    </li>
+						    <li class="list-group-item row">
+						      <label class="col-md-5 col-lg-5"><b>Rating</b></label> {{ job.rating }}
+						    </li>
+						  </ul>
+						</div>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		 </v-layout>
 		<!-- profile -->
 		<v-dialog v-model="openProRequest" fullscreen hide-overlay transition="dialog-bottom-transition">
-			<v-card id="shipment_det">
+			<v-card style="background: #f5f8fa;">
 				<v-card-title>
 					<v-toolbar dark color="primary">
 						<v-btn icon dark @click.native="close">
@@ -51,55 +74,11 @@
 						</v-layout>
 					</v-card>
 
+					<div style="height: 50px"></div>
 					<v-divider></v-divider>
-					<v-divider></v-divider>
-					<v-divider></v-divider>
-
+					<div style="height: 50px"></div>
 
 					<v-container grid-list-md text-xs-center>
-						<v-card-title>
-							<h3 class="text-center">Documents</h3>
-							<v-spacer></v-spacer>
-							<v-text-field
-							v-model="search"
-							append-icon="search"
-							label="Search"
-							single-line
-							hide-details
-							></v-text-field>
-						</v-card-title>
-						<v-data-table
-						:headers="proheaders"
-						:items="Alldocs"
-						:search="search"
-						counter
-						class="elevation-1"
-						>
-						<template slot="items" slot-scope="props">
-							<td>
-								{{ props.item.name }}
-							</td>
-							<td class="text-xs-right">{{ props.item.description }}</td>
-							<td class="text-xs-right">{{ props.item.created_at }}</td>
-							<td class="justify-center layout px-0">
-								<v-btn icon class="mx-0" @click="download(props.item)">
-									<v-icon color="pink darken-2">cloud_upload</v-icon>
-								</v-btn>
-
-							</td> 
-						</template>
-						<v-alert slot="no-results" :value="true" color="error" icon="warning">
-							Your search for "{{ search }}" found no results.
-						</v-alert>
-						<template slot="pageText" slot-scope="{ pageStart, pageStop }">
-							From {{ pageStart }} to {{ pageStop }}
-						</template>
-					</v-data-table>
-
-					<v-divider></v-divider>
-					<v-divider></v-divider>
-					<v-divider></v-divider>
-
 
 					<!-- Jobs -->
 
@@ -119,8 +98,8 @@
 						<td class="text-xs-right">{{ props.item.email }}</td>
 						<td class="text-xs-right">{{ props.item.created_at }}</td>
 						<td class="justify-center layout px-0">
-							<v-btn icon class="mx-0" @click="download(props.item)">
-								<v-icon color="teal darken-2">cloud_upload</v-icon>
+							<v-btn icon class="mx-0" @click="openJob(props.item)">
+								<v-icon color="blue darken-2">visibility</v-icon>
 							</v-btn>
 
 						</td> 
@@ -149,21 +128,16 @@ export default{
 			search: '',
 			rating: 4,
 			seeDocuments: {},
+			detailsModal: false,
 			AllComments: [],
 			Alldocs: [],
-
+			AllJobs: {},
 			jobsheaders: [
 			{ text: 'Client Name', align: 'left', value: 'name'},
 			{ text: 'Client Email', value: 'email' },
 			{ text: 'Done on', value: 'created_at' },
 			{ text: 'Actions', value: 'name', sortable: false }
 
-			],
-			proheaders: [
-			{ text: 'Name', align: 'left', value: 'name'},
-			{ text: 'description', value: 'description' },
-			{ text: 'Uploaded on', value: 'created_at' },
-			{ text: 'Actions', value: 'name', sortable: false }
 			],
 			headers: [
 			{ text: 'Name', align: 'left', value: 'name'},
@@ -196,53 +170,22 @@ export default{
 		    	this.color = 'red'
 		    	this.snackbar = true
 		    })
-		},
-		
-
-		 download(item) {
-		  this.docNo = Object.assign({}, item)
-		  this.editedIndex = this.Alldocs.indexOf(item)
-		  /*axios.get(`/${this.seeDocuments.id}`)
-		  .then((response) => {
-		   console.log(reaponse);
-		    this.message = 'Successifully Added';
-		    this.snackbar = true;
-		    this.color = 'indigo';
-		  })  
-		  .catch((error) => {
-		    this.errors = error.response.data.errors
-		    this.message = 'failed ';
-		    this.snackbar = true;
-		    this.color = 'red';
-		  })*/
-		  axios({
-		    url: 'http://mechanics.dev/storage/attachments/LmztVebBIu9akwN97ZHUtDzQUgsPFB1odUZGCzkA.pdf',
-		    method: 'GET',
-		    responseType: 'blob', // important
-		  }).then((response) => {
-		    this.message = 'Successifully Added';
-		    this.snackbar = true;
-		    this.color = 'indigo';
-		    const url = window.URL.createObjectURL(new Blob([response.data]));
-		    const link = document.createElement('a');
-		    link.href = url;
-		    link.setAttribute('download', 'file.pdf');
-		    document.body.appendChild(link);
-		    link.click();
-		  })  
-		  .catch((error) => {
-		    this.errors = error.response.data.errors
-		    this.message = 'failed ';
-		    this.snackbar = true;
-		    this.color = 'red';
-		  });
-		},
-
+		},		
+		 openJob(item) {
+		 	this.detailsModal = true
+		 },
 		close() {
 			this.$emit('closeRequest')
 		},
 	},
 	mounted() {
+		axios.post('getJobs')
+		.then((response) => {
+			this.AllJobs = response.data
+		})
+		.catch((error) => {
+			this.errors = error.response.data.errors
+		})
 
 		axios.post('getComments')
 		.then((response) => {
@@ -264,3 +207,7 @@ export default{
 	}
 }
 </script>
+
+<style scoped>
+
+</style>

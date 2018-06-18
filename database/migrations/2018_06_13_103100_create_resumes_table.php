@@ -16,9 +16,11 @@ class CreateResumesTable extends Migration
         Schema::create('resumes', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('quarifications');
-            $table->string('reference');
-            $table->string('interests');
+            $table->integer('mechanic_id');
+            $table->text('quarification');
+            $table->text('about');
+            $table->text('reference');
+            $table->text('interest');
             $table->timestamps();
         });
     }

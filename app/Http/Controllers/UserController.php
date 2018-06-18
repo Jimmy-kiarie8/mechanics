@@ -25,29 +25,33 @@ class UserController extends Controller
         // $decrypted = Crypt::decryptString($encrypted);
 
         $user = new User;
-        /*if ($request->location) {
+        if ($request->location) {
             $location = serialize($request->location);
             // Location
             $loc = $request->location;
+            // var_dump($loc); die;
             $longitude = $loc['longitude'];
             $latitude = $loc['latitude'];
             $country = $loc['country'];
 
-            if (in_array('administrative_area_level_1', $loc)) {
+            if (in_array($loc['administrative_area_level_1'], $loc)) {
                 $locality = $loc['administrative_area_level_1'];
             } elseif (in_array('locality', $loc)) {
                 $locality = $loc['locality'];
             } else {
-                $locality = 'aa';
+                $locality = '';
             }
-            var_dump($locality); die;
+            // var_dump($locality);die;
+            // var_dump($locality); die;
 
             $user->longitude = $longitude;
             $user->latitude = $latitude;
             $user->country = $country;
             $user->locality = $locality;
+            $user->locality = $locality;
             $user->location = $location;
-        }*/
+        }
+        // return 'no location';
 
         $password = Hash::make($request->form['password']);
         $user->name = $request->form['name'];
@@ -55,10 +59,10 @@ class UserController extends Controller
         $user->email = $request->form['email'];
         $user->phone = $request->form['phone'];
         $user->id_no = $request->form['id_no'];
-        $user->country = $request->form['country'];
+        // $user->country = $request->form['country'];
         $user->city = $request->form['city'];
         $user->address = $request->form['address'];
-        $user->county = $request->form['county'];
+        // $user->county = $request->form['county'];
         $user->age = $request->form['age'];
         // $user->address = $request->address;
         // $user->city = $request->city;
@@ -87,11 +91,38 @@ class UserController extends Controller
     {
         // return $request->all();
         $user = User::find($id);
+        
         if ($request->location) {
+            $location = serialize($request->location);
+            // Location
+            $loc = $request->location;
+            // var_dump($loc); die;
+            $longitude = $loc['longitude'];
+            $latitude = $loc['latitude'];
+            $country = $loc['country'];
+
+            if (in_array($loc['administrative_area_level_1'], $loc)) {
+                $locality = $loc['administrative_area_level_1'];
+            } elseif (in_array('locality', $loc)) {
+                $locality = $loc['locality'];
+            } else {
+                $locality = '';
+            }
+            // var_dump($locality);die;
+            // var_dump($locality); die;
+
+            $user->longitude = $longitude;
+            $user->latitude = $latitude;
+            $user->country = $country;
+            $user->locality = $locality;
+            $user->locality = $locality;
+            $user->location = $location;
+        }
+        /*if ($request->location) {
             $location_new = $request->location;
             $location = serialize($location_new);
             $user->location = $location;
-        }
+        }*/
         $password = Hash::make($request->form['password']);
         $user->name = $request->form['name'];
         $user->password = $password;

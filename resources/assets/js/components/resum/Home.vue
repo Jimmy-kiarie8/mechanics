@@ -40,6 +40,15 @@
             <v-btn icon class="mx-0" @click="editItem(props.item)">
               <v-icon color="blue darken-2">edit</v-icon>
             </v-btn>
+            <v-btn icon class="mx-0" @click="education(props.item)">
+              <v-icon color="blue darken-2">school</v-icon>
+            </v-btn>
+            <v-btn icon class="mx-0" @click="personal(props.item)">
+              <v-icon color="blue darken-2">account_circle</v-icon>
+            </v-btn>
+            <v-btn icon class="mx-0" @click="skills(props.item)">
+              <v-icon color="blue darken-2">info</v-icon>
+            </v-btn>
         </td> 
       </template>
       <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -62,24 +71,33 @@ left
 v-model="snackbar"
 >
 {{ message }}
-<v-btn flat color="white">Close</v-btn>
+<v-icon dark right>check_circle</v-icon>
 </v-snackbar>
 </v-content>
-<myCreate :openRequest="openCreate" :resumeInfo="editedItem" @closeRequest="close"></myCreate>
+<myEducation :openRequest="openCreate" :resumeInfo="editedItem" @alertRequest="alert" @closeRequest="close"></myEducation>
+<myExperience :openRequest="openExp" :resumeInfo="editedItem" @alertRequest="alert" @closeRequest="close"></myExperience>
+<myPersonal :openRequest="openPer" :resumeInfo="editedItem" @alertRequest="alert" @closeRequest="close"></myPersonal>
+<mySkills :openRequest="openSkill" :resumeInfo="editedItem" @alertRequest="alert" @closeRequest="close"></mySkills>
 
 </div>
 </template>
 
 <script>
-let myCreate = require('./Create.vue')
+let myEducation = require('./Education.vue')
+let myExperience = require('./Experience.vue')
+let myPersonal = require('./Personal.vue')
+let mySkills = require('./Skills.vue')
 export default {
   props: ['user', 'role'],
   components: {
-    myCreate
+    myEducation, myExperience, myPersonal, mySkills
   }, 
   data() {
     return{
       openCreate: false,
+      openExp: false,
+      openPer: false,
+      openSkill: false,
       headers: [
         { text: 'Name', align: 'left', value: 'name'},
         { text: 'email', value: 'email' },
@@ -99,6 +117,7 @@ export default {
       message: '',
       Allusers: [],
       editedItem: {},
+      educationobj: [],
       emailRules: [
       v => {
         return !!v || 'E-mail is required'
@@ -118,10 +137,34 @@ methods: {
     this.editedItem = Object.assign({}, item)
     this.editedIndex = this.Allusers.indexOf(item)
     // console.log(this.editedItem);
+    this.openExp = true
+  },
+
+  education(item) {
+    this.editedItem = Object.assign({}, item)
+    this.editedIndex = this.Allusers.indexOf(item)
+    // console.log(this.editedItem);
     this.openCreate = true
   },
+  skills(item) {
+    this.editedItem = Object.assign({}, item)
+    this.editedIndex = this.Allusers.indexOf(item)
+    // console.log(this.editedItem);
+    this.openSkill = true
+  },
+  personal(item) {
+    this.editedItem = Object.assign({}, item)
+    this.editedIndex = this.Allusers.indexOf(item)
+    // console.log(this.editedItem);
+    this.openPer = true
+  },
+  alert() {
+    this.message='success'
+    this.color="indigo"
+    this.snackbar=true
+  },
   close() {
-    this.openCreate = false
+    this.openCreate = this.openExp = this.openPer = this.openSkill = false
   },
 },
 mounted() {
@@ -152,22 +195,5 @@ mounted() {
 <style scoped>
 .content--wrap{
  margin-top: -100px
-}
-#profile { 
- width: 70px;
- height: 60px;
- border-radius: 50%;
- margin-left: 80px;
- margin-top: -30px;
-}
-i{
- padding: 7px;
- background: #f0f0f0;
- border-radius: 50%;
-}
-.list-group-item:hover, .list-group-item:focus {
- z-index: 1;
- background: #f9f9f9;
- text-decoration: none;
 }
 </style>
