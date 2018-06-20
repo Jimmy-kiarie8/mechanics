@@ -30,6 +30,13 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+
+    {{-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> --}}
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNzKeF6ZwxlAOUCyeH8UxvvYRHP_w_Guk&libraries=places"></script>
     {{-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous"> --}}
@@ -37,6 +44,8 @@
     <link href="{{ asset('vuetify/css/vuetify.min.css') }}" rel="stylesheet">
     {{-- <script src="https://unpkg.com/vue-star-rating/dist/star-rating.min.js"></script> --}}
 
+    {{-- <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script> --}}
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">

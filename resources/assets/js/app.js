@@ -35,6 +35,8 @@ let myProfile = require('./components/users/Profile.vue')
 let myResume = require('./components/resum/Resume.vue')
 let myResumeHome = require('./components/resum/Home.vue')
 let myJob = require('./components/jobs/Job.vue')
+let myMech = require('./components/mechanics/Mechanics.vue')
+let mysubsicriber = require('./components/emails/Subscribe.vue');
 
 const routes = [
 	{path: '/', component: myView},
@@ -44,6 +46,8 @@ const routes = [
 	{path: '/resume', component: myResume},
 	{path: '/home', component: myResumeHome},
 	{path: '/jobs', component: myJob},
+	{path: '/mechanics', component: myMech},
+	{path: '/subscribers', component: mysubsicriber },
 ]
 const router = new VueRouter({
 // mode: 'history',
@@ -53,6 +57,7 @@ const app = new Vue({
     el: '#app',
     router,
     components: {
-    	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, myResumeHome, myJob
+    	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, 
+    	myResumeHome, myJob, myMech, mysubsicriber
     }
 });

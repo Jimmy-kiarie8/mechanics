@@ -174,6 +174,88 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -483,88 +565,6 @@ module.exports = {
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -826,7 +826,7 @@ module.exports = g;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 var normalizeHeaderName = __webpack_require__(25);
 
 var DEFAULT_CONTENT_TYPE = {
@@ -14038,7 +14038,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 var settle = __webpack_require__(26);
 var buildURL = __webpack_require__(28);
 var parseHeaders = __webpack_require__(29);
@@ -14333,7 +14333,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(16);
-module.exports = __webpack_require__(121);
+module.exports = __webpack_require__(152);
 
 
 /***/ }),
@@ -14383,9 +14383,11 @@ var myDocs = __webpack_require__(82);
 var myProfile = __webpack_require__(87);
 var myResume = __webpack_require__(90);
 var myResumeHome = __webpack_require__(96);
-var myJob = __webpack_require__(136);
+var myJob = __webpack_require__(121);
+var myMech = __webpack_require__(138);
+var mysubsicriber = __webpack_require__(143);
 
-var routes = [{ path: '/', component: myView }, { path: '/users', component: myUser }, { path: '/docs', component: myDocs }, { path: '/profile', component: myProfile }, { path: '/resume', component: myResume }, { path: '/home', component: myResumeHome }, { path: '/jobs', component: myJob }];
+var routes = [{ path: '/', component: myView }, { path: '/users', component: myUser }, { path: '/docs', component: myDocs }, { path: '/profile', component: myProfile }, { path: '/resume', component: myResume }, { path: '/home', component: myResumeHome }, { path: '/jobs', component: myJob }, { path: '/mechanics', component: myMech }, { path: '/subscribers', component: mysubsicriber }];
 var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
   // mode: 'history',
   routes: routes // short for `routes: routes`
@@ -14394,7 +14396,8 @@ var app = new Vue({
   el: '#app',
   router: router,
   components: {
-    StarRating: __WEBPACK_IMPORTED_MODULE_2_vue_star_rating___default.a, myView: myView, myUser: myUser, myHeader: myHeader, myDocs: myDocs, myProfile: myProfile, myResume: myResume, myResumeHome: myResumeHome, myJob: myJob
+    StarRating: __WEBPACK_IMPORTED_MODULE_2_vue_star_rating___default.a, myView: myView, myUser: myUser, myHeader: myHeader, myDocs: myDocs, myProfile: myProfile, myResume: myResume,
+    myResumeHome: myResumeHome, myJob: myJob, myMech: myMech, mysubsicriber: mysubsicriber
   }
 });
 
@@ -35546,7 +35549,7 @@ module.exports = __webpack_require__(22);
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 var bind = __webpack_require__(8);
 var Axios = __webpack_require__(24);
 var defaults = __webpack_require__(5);
@@ -35633,7 +35636,7 @@ function isSlowBuffer (obj) {
 
 
 var defaults = __webpack_require__(5);
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 var InterceptorManager = __webpack_require__(33);
 var dispatchRequest = __webpack_require__(34);
 
@@ -35718,7 +35721,7 @@ module.exports = Axios;
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -35798,7 +35801,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -35871,7 +35874,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -35931,7 +35934,7 @@ module.exports = function parseHeaders(headers) {
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -36049,7 +36052,7 @@ module.exports = btoa;
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -36109,7 +36112,7 @@ module.exports = (
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -36168,7 +36171,7 @@ module.exports = InterceptorManager;
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 var transformData = __webpack_require__(35);
 var isCancel = __webpack_require__(12);
 var defaults = __webpack_require__(5);
@@ -36261,7 +36264,7 @@ module.exports = function dispatchRequest(config) {
 "use strict";
 
 
-var utils = __webpack_require__(1);
+var utils = __webpack_require__(2);
 
 /**
  * Transform the data for a request or a response
@@ -68163,7 +68166,7 @@ if(false) {
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -69766,7 +69769,7 @@ if(false) {
 /* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -69782,6 +69785,12 @@ exports.push([module.i, "\n.content--wrap[data-v-d0ee1f54]{\r\n margin-top: -100
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -69922,6 +69931,7 @@ var EditUser = __webpack_require__(78);
       search: '',
       e1: true,
       loader: false,
+      loading: false,
       dispAdd: false,
       docsdialog2: false,
       pdialog2: false,
@@ -69997,13 +70007,14 @@ var EditUser = __webpack_require__(78);
     commdialog: function commdialog() {
       var _this2 = this;
 
-      // this.commdialog2 = true
+      this.loading = true;
       axios.post('/comments/' + this.feedback.id, this.feedback).then(function (response) {
-
+        _this2.loading = false;
         _this2.message = 'Commented';
         _this2.color = 'indigo';
         _this2.snackbar = true;
       }).catch(function (error) {
+        _this2.loading = false;
         _this2.errors = error.response.data.errors;
         _this2.message = 'something went wrong';
         _this2.color = 'red';
@@ -70246,8 +70257,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_defineProperty({
@@ -70271,7 +70280,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       companies: {},
       errors: {},
       defaultForm: defaultForm,
-      loader: false,
+      loading: false,
       e1: true,
       form: Object.assign({}, defaultForm),
       emailRules: [function (v) {
@@ -70295,17 +70304,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     save: function save() {
       var _this = this;
 
+      this.loading = true;
       axios.post('/users', { form: this.$data.form, location: this.address }).then(function (response) {
-        _this.loader = false;
-        console.log(response);
-        /*this.$parent.Allusers.push(response.data) 
-        this.close;
-        this.resetForm();
-        this.$emit('closeRequest');
-        this.$emit('alertRequest');*/
+        _this.loading = false;
+        console.log(response.data);
+        // this.close;
+        _this.resetForm();
+        _this.$emit('closeRequest');
+        _this.$emit('alertRequest');
+        _this.$parent.Allusers.push(response.data.form);
       }).catch(function (error) {
         _this.errors = error.response.data.errors;
-        _this.loader = false;
+        _this.loading = false;
       });
     },
     resetForm: function resetForm() {
@@ -70855,17 +70865,7 @@ var render = function() {
                     [
                       _c(
                         "v-layout",
-                        {
-                          directives: [
-                            {
-                              name: "show",
-                              rawName: "v-show",
-                              value: !_vm.loader,
-                              expression: "!loader"
-                            }
-                          ],
-                          attrs: { wrap: "" }
-                        },
+                        { attrs: { wrap: "" } },
                         [
                           _c(
                             "v-form",
@@ -71173,7 +71173,8 @@ var render = function() {
                                     "v-btn",
                                     {
                                       attrs: {
-                                        disabled: !_vm.formIsValid,
+                                        disabled: _vm.loading,
+                                        loading: _vm.loading,
                                         flat: "",
                                         color: "primary"
                                       },
@@ -71187,28 +71188,6 @@ var render = function() {
                             ],
                             1
                           )
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          directives: [
-                            {
-                              name: "show",
-                              rawName: "v-show",
-                              value: _vm.loader,
-                              expression: "loader"
-                            }
-                          ],
-                          staticStyle: { "text-align": "center", width: "100%" }
-                        },
-                        [
-                          _c("v-progress-circular", {
-                            staticStyle: { margin: "1rem" },
-                            attrs: { width: 3, indeterminate: "", color: "red" }
-                          })
                         ],
                         1
                       )
@@ -71319,7 +71298,7 @@ if(false) {
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -72160,10 +72139,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['editedItemCon', 'openEditRequest'],
@@ -72171,6 +72146,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       e1: true,
       loader: false,
+      loading: false,
       list: {},
       emailRules: [function (v) {
         return !!v || 'E-mail is required';
@@ -72190,16 +72166,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     update: function update() {
       var _this = this;
 
+      this.loading = true;
       axios.patch('/users/' + this.editedItemCon.id, { form: this.editedItemCon, location: this.address }).then(function (response) {
         // console.log(response);
-        _this.loader = false;
+        _this.loading = false;
         _this.close;
         // this.resetForm();
+        Object.assign(_this.$parent.Allusers[_this.$parent.editedIndex], _this.$parent.editedItem);
         _this.$emit('closeRequest');
         _this.$emit('alertRequest');
       }).catch(function (error) {
         _this.errors = error.response.data.errors;
-        _this.loader = false;
+        _this.loading = false;
       });
     },
 
@@ -72415,29 +72393,6 @@ var render = function() {
                             "v-flex",
                             { attrs: { xs12: "", sm6: "" } },
                             [
-                              _c("v-text-field", {
-                                attrs: {
-                                  rules: _vm.rules.name,
-                                  color: "blue darken-2",
-                                  label: "City",
-                                  required: ""
-                                },
-                                model: {
-                                  value: _vm.editedItemCon.city,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.editedItemCon, "city", $$v)
-                                  },
-                                  expression: "editedItemCon.city"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-flex",
-                            { attrs: { xs12: "", sm6: "" } },
-                            [
                               _c("v-slider", {
                                 attrs: {
                                   rules: _vm.rules.age,
@@ -72540,7 +72495,12 @@ var render = function() {
               _c(
                 "v-btn",
                 {
-                  attrs: { color: "primary", flat: "" },
+                  attrs: {
+                    color: "primary",
+                    flat: "",
+                    loading: _vm.loading,
+                    disabled: _vm.loading
+                  },
                   on: { click: _vm.update }
                 },
                 [_vm._v("Add")]
@@ -72692,7 +72652,9 @@ var render = function() {
                                         {
                                           attrs: {
                                             color: "blue darken-1",
-                                            flat: ""
+                                            flat: "",
+                                            loading: _vm.loading,
+                                            disabled: _vm.loading
                                           },
                                           nativeOn: {
                                             click: function($event) {
@@ -72745,7 +72707,11 @@ var render = function() {
                       expression: "loader"
                     }
                   ],
-                  staticStyle: { "text-align": "center" }
+                  staticStyle: {
+                    "text-align": "center",
+                    width: "100%",
+                    "margin-top": "200px"
+                  }
                 },
                 [
                   _c("v-progress-circular", {
@@ -72773,16 +72739,6 @@ var render = function() {
                   _c("div", { staticClass: "container" }, [
                     _c(
                       "div",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: !_vm.loader,
-                            expression: "!loader"
-                          }
-                        ]
-                      },
                       [
                         _c(
                           "v-card-title",
@@ -73170,7 +73126,7 @@ if(false) {
 /* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -74658,7 +74614,7 @@ if(false) {
 /* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 exports.i(__webpack_require__(93), "");
 
@@ -74672,7 +74628,7 @@ exports.push([module.i, "\r\n", ""]);
 /* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -75537,7 +75493,7 @@ if(false) {
 /* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -75812,7 +75768,7 @@ if(false) {
 /* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -76395,7 +76351,7 @@ if(false) {
 /* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -77138,7 +77094,7 @@ if(false) {
 /* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -77719,7 +77675,7 @@ if(false) {
 /* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -78469,38 +78425,18 @@ if (false) {
 
 /***/ }),
 /* 121 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 122 */,
-/* 123 */,
-/* 124 */,
-/* 125 */,
-/* 126 */,
-/* 127 */,
-/* 128 */,
-/* 129 */,
-/* 130 */,
-/* 131 */,
-/* 132 */,
-/* 133 */,
-/* 134 */,
-/* 135 */,
-/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(137)
+  __webpack_require__(122)
 }
 var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(139)
+var __vue_script__ = __webpack_require__(124)
 /* template */
-var __vue_template__ = __webpack_require__(140)
+var __vue_template__ = __webpack_require__(137)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78539,13 +78475,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 137 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(138);
+var content = __webpack_require__(123);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -78565,10 +78501,10 @@ if(false) {
 }
 
 /***/ }),
-/* 138 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -78579,7 +78515,7 @@ exports.push([module.i, "\n.content--wrap[data-v-2ae025ee]{\r\n margin-top: -100
 
 
 /***/ }),
-/* 139 */
+/* 124 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78663,9 +78599,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
-var AddJob = __webpack_require__(153);
-var JobShow = __webpack_require__(162);
-var EditJob = __webpack_require__(159);
+var AddJob = __webpack_require__(125);
+var JobShow = __webpack_require__(128);
+var EditJob = __webpack_require__(134);
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'role'],
   components: {
@@ -78762,341 +78698,15 @@ var EditJob = __webpack_require__(159);
 });
 
 /***/ }),
-/* 140 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c(
-        "v-content",
-        [
-          _c(
-            "v-container",
-            { attrs: { fluid: "", "fill-height": "" } },
-            [
-              _c(
-                "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.loader,
-                      expression: "loader"
-                    }
-                  ],
-                  staticStyle: { "text-align": "center" }
-                },
-                [
-                  _c("v-progress-circular", {
-                    staticStyle: { margin: "1rem" },
-                    attrs: { width: 3, indeterminate: "", color: "red" }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-layout",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: !_vm.loader,
-                      expression: "!loader"
-                    }
-                  ],
-                  attrs: { "justify-center": "", "align-center": "" }
-                },
-                [
-                  _c("div", { staticClass: "container" }, [
-                    _c(
-                      "div",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: !_vm.loader,
-                            expression: "!loader"
-                          }
-                        ]
-                      },
-                      [
-                        _c(
-                          "v-card-title",
-                          [
-                            _c("v-spacer"),
-                            _vm._v(" "),
-                            _c("v-text-field", {
-                              attrs: {
-                                "append-icon": "search",
-                                label: "Search",
-                                "single-line": "",
-                                "hide-details": ""
-                              },
-                              model: {
-                                value: _vm.search,
-                                callback: function($$v) {
-                                  _vm.search = $$v
-                                },
-                                expression: "search"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "v-data-table",
-                          {
-                            staticClass: "elevation-1",
-                            attrs: {
-                              headers: _vm.headers,
-                              items: _vm.Allusers,
-                              search: _vm.search,
-                              counter: ""
-                            },
-                            scopedSlots: _vm._u([
-                              {
-                                key: "items",
-                                fn: function(props) {
-                                  return [
-                                    _c("td", [
-                                      _vm._v(
-                                        "\n          " +
-                                          _vm._s(props.item.name) +
-                                          "\n        "
-                                      )
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", { staticClass: "text-xs-right" }, [
-                                      _vm._v(_vm._s(props.item.email))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", { staticClass: "text-xs-right" }, [
-                                      _vm._v(_vm._s(props.item.id_no))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", { staticClass: "text-xs-right" }, [
-                                      _vm._v(_vm._s(props.item.phone))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", { staticClass: "text-xs-right" }, [
-                                      _vm._v(_vm._s(props.item.rating))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", { staticClass: "text-xs-right" }, [
-                                      _vm._v(_vm._s(props.item.locality))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", { staticClass: "text-xs-right" }, [
-                                      _vm._v(_vm._s(props.item.status))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c(
-                                      "td",
-                                      {
-                                        staticClass:
-                                          "justify-center layout px-0"
-                                      },
-                                      [
-                                        _c(
-                                          "v-btn",
-                                          {
-                                            staticClass: "mx-0",
-                                            attrs: { icon: "" },
-                                            on: {
-                                              click: function($event) {
-                                                _vm.giveJob(props.item)
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _c(
-                                              "v-icon",
-                                              {
-                                                attrs: {
-                                                  color: "blue darken-2"
-                                                }
-                                              },
-                                              [_vm._v("add")]
-                                            )
-                                          ],
-                                          1
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "v-btn",
-                                          {
-                                            staticClass: "mx-0",
-                                            attrs: { icon: "" },
-                                            on: {
-                                              click: function($event) {
-                                                _vm.ShowJobSt(props.item)
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _c(
-                                              "v-icon",
-                                              {
-                                                attrs: {
-                                                  color: "blue darken-2"
-                                                }
-                                              },
-                                              [_vm._v("visibility")]
-                                            )
-                                          ],
-                                          1
-                                        )
-                                      ],
-                                      1
-                                    )
-                                  ]
-                                }
-                              },
-                              {
-                                key: "pageText",
-                                fn: function(ref) {
-                                  var pageStart = ref.pageStart
-                                  var pageStop = ref.pageStop
-                                  return [
-                                    _vm._v(
-                                      "\n       From " +
-                                        _vm._s(pageStart) +
-                                        " to " +
-                                        _vm._s(pageStop) +
-                                        "\n     "
-                                    )
-                                  ]
-                                }
-                              }
-                            ])
-                          },
-                          [
-                            _c(
-                              "v-alert",
-                              {
-                                attrs: {
-                                  slot: "no-results",
-                                  value: true,
-                                  color: "error",
-                                  icon: "warning"
-                                },
-                                slot: "no-results"
-                              },
-                              [
-                                _vm._v(
-                                  '\n       Your search for "' +
-                                    _vm._s(_vm.search) +
-                                    '" found no results.\n     '
-                                )
-                              ]
-                            )
-                          ],
-                          1
-                        )
-                      ],
-                      1
-                    )
-                  ])
-                ]
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "v-snackbar",
-            {
-              attrs: {
-                timeout: _vm.timeout,
-                bottom: "",
-                color: _vm.color,
-                left: ""
-              },
-              model: {
-                value: _vm.snackbar,
-                callback: function($$v) {
-                  _vm.snackbar = $$v
-                },
-                expression: "snackbar"
-              }
-            },
-            [
-              _vm._v("\n" + _vm._s(_vm.message) + "\n"),
-              _c("v-icon", { attrs: { dark: "", right: "" } }, [
-                _vm._v("check_circle")
-              ])
-            ],
-            1
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c("AddJob", {
-        attrs: { openAddRequest: _vm.dispAdd, editedItemCon: _vm.editedItem },
-        on: { closeRequest: _vm.close, alertRequest: _vm.showAlert }
-      }),
-      _vm._v(" "),
-      _c("EditJob", {
-        attrs: { openEditRequest: _vm.pdialog2, editedItemCon: _vm.editedItem },
-        on: { closeRequest: _vm.close }
-      }),
-      _vm._v(" "),
-      _c("JobShow", {
-        attrs: {
-          AllJobsDisp: _vm.JobsDisp,
-          openRequest: _vm.JobDialog,
-          users: _vm.Allusers,
-          editedItemCon: _vm.editedItem
-        },
-        on: { closeRequest: _vm.close }
-      })
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-2ae025ee", module.exports)
-  }
-}
-
-/***/ }),
-/* 141 */,
-/* 142 */,
-/* 143 */,
-/* 144 */,
-/* 145 */,
-/* 146 */,
-/* 147 */,
-/* 148 */,
-/* 149 */,
-/* 150 */,
-/* 151 */,
-/* 152 */,
-/* 153 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(154)
+var __vue_script__ = __webpack_require__(126)
 /* template */
-var __vue_template__ = __webpack_require__(155)
+var __vue_template__ = __webpack_require__(127)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79135,16 +78745,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 154 */
+/* 126 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
 //
 //
 //
@@ -79228,14 +78835,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this.loading = false;
         console.log(response);
         _this.$emit('alertRequest');
-        /*this.$parent.Allusers.push(response.data) 
-        this.close;
-        this.resetForm();
-        this.$emit('closeRequest');
-        this.$emit('alertRequest');*/
+        _this.$parent.JobsDisp.push(response.data);
+        _this.resetForm();
+        _this.$emit('closeRequest');
       }).catch(function (error) {
-        _this.errors = error.response.data.errors;
         _this.loading = false;
+        _this.errors = error.response.data.errors;
       });
     },
     resetForm: function resetForm() {
@@ -79270,7 +78875,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 }, 'mounted', function mounted() {}));
 
 /***/ }),
-/* 155 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79310,17 +78915,7 @@ var render = function() {
                     [
                       _c(
                         "v-layout",
-                        {
-                          directives: [
-                            {
-                              name: "show",
-                              rawName: "v-show",
-                              value: !_vm.loader,
-                              expression: "!loader"
-                            }
-                          ],
-                          attrs: { wrap: "" }
-                        },
+                        { attrs: { wrap: "" } },
                         [
                           _c(
                             "v-form",
@@ -79433,28 +79028,6 @@ var render = function() {
                           )
                         ],
                         1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          directives: [
-                            {
-                              name: "show",
-                              rawName: "v-show",
-                              value: _vm.loader,
-                              expression: "loader"
-                            }
-                          ],
-                          staticStyle: { "text-align": "center", width: "100%" }
-                        },
-                        [
-                          _c("v-progress-circular", {
-                            staticStyle: { margin: "1rem" },
-                            attrs: { width: 3, indeterminate: "", color: "red" }
-                          })
-                        ],
-                        1
                       )
                     ],
                     1
@@ -79483,15 +79056,190 @@ if (false) {
 }
 
 /***/ }),
-/* 156 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(157)
+var __vue_script__ = __webpack_require__(129)
 /* template */
-var __vue_template__ = __webpack_require__(158)
+var __vue_template__ = __webpack_require__(133)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\jobs\\JobShow.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-31a9f8ea", Component.options)
+  } else {
+    hotAPI.reload("data-v-31a9f8ea", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 129 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+var ShowJob = __webpack_require__(130);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['openRequest', 'editedItemCon', 'users', 'AllJobsDisp'],
+  components: {
+    ShowJob: ShowJob
+  },
+  data: function data() {
+    return {
+      JobDialog: false,
+      dialog: false,
+      AllJobs: [],
+      JobsDisp: [],
+      editedItem: {}
+    };
+  },
+
+
+  methods: {
+    ShowJobSt: function ShowJobSt(key) {
+      // this.editedItem = Object.assign({}, item)
+      // this.editedIndex = this.AllJobs.indexOf(item)
+      console.log(this.AllJobsDisp[key]);
+      this.$children[0].list = this.AllJobsDisp[key];
+      // console.log(this.editedItem);
+      this.JobDialog = true;
+
+      /*axios.post(`getJobs/${this.editedItem.id}`)
+      .then((response) => {
+        this.JobsDisp = response.data
+      })
+      .catch((error) => {
+        this.errors = error.response.data.errors
+      })*/
+    },
+    close: function close() {
+      this.$emit('closeRequest');
+    },
+    closeD: function closeD() {
+      this.JobDialog = false;
+    }
+  },
+
+  mounted: function mounted() {
+    /*axios.post(`getJobs/${this.editedItemCon.id}`)
+    .then((response) => {
+      this.AllJobs = response.data
+    })
+    .catch((error) => {
+      this.errors = error.response.data.errors
+    })*/
+  }
+});
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(131)
+/* template */
+var __vue_template__ = __webpack_require__(132)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79530,7 +79278,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 157 */
+/* 131 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79660,7 +79408,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 158 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79867,15 +79615,262 @@ if (false) {
 }
 
 /***/ }),
-/* 159 */
+/* 133 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "v-layout",
+        { attrs: { row: "", "justify-center": "" } },
+        [
+          _c(
+            "v-dialog",
+            {
+              attrs: {
+                fullscreen: "",
+                "hide-overlay": "",
+                transition: "dialog-bottom-transition"
+              },
+              model: {
+                value: _vm.openRequest,
+                callback: function($$v) {
+                  _vm.openRequest = $$v
+                },
+                expression: "openRequest"
+              }
+            },
+            [
+              _c(
+                "v-card",
+                [
+                  _c(
+                    "v-toolbar",
+                    { attrs: { dark: "", color: "primary" } },
+                    [
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { icon: "", dark: "" },
+                          nativeOn: {
+                            click: function($event) {
+                              return _vm.close($event)
+                            }
+                          }
+                        },
+                        [_c("v-icon", [_vm._v("close")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c("v-toolbar-title", [_vm._v("Jobs")]),
+                      _vm._v(" "),
+                      _c("v-spacer"),
+                      _vm._v(" "),
+                      _c("v-toolbar-items")
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "container" }, [
+                    _c(
+                      "table",
+                      { staticClass: "table table-hover table-stripped" },
+                      [
+                        _c("thead", [
+                          _c("th", [_vm._v("Mechanic")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Client")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Description")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Rating")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Created On")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("#")])
+                        ]),
+                        _vm._v(" "),
+                        _vm.AllJobsDisp.length === 1
+                          ? _c("tbody", [
+                              _c(
+                                "tr",
+                                [
+                                  _vm._l(_vm.users, function(user) {
+                                    return user.id === _vm.jobs.mechanic_id
+                                      ? _c("td", [_vm._v(_vm._s(user.name))])
+                                      : _vm._e()
+                                  }),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.users, function(user) {
+                                    return user.id === _vm.jobs.client_id
+                                      ? _c("td", [_vm._v(_vm._s(user.name))])
+                                      : _vm._e()
+                                  }),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(_vm._s(_vm.AllJobsDisp.description))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(_vm._s(_vm.AllJobsDisp.rating))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(_vm._s(_vm.AllJobsDisp.created_at))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "td",
+                                    {
+                                      staticClass: "justify-center layout px-0"
+                                    },
+                                    [
+                                      _c(
+                                        "v-btn",
+                                        {
+                                          staticClass: "mx-0",
+                                          attrs: { icon: "" },
+                                          on: {
+                                            click: function($event) {
+                                              _vm.ShowJobSt(_vm.AllJobsDisp.id)
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c(
+                                            "v-icon",
+                                            {
+                                              attrs: { color: "blue darken-2" }
+                                            },
+                                            [_vm._v("visibility")]
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                2
+                              )
+                            ])
+                          : _vm._l(_vm.AllJobsDisp, function(jobs, key) {
+                              return _c("tbody", { key: jobs.id }, [
+                                _c(
+                                  "tr",
+                                  [
+                                    _vm._l(_vm.users, function(user) {
+                                      return user.id === jobs.mechanic_id
+                                        ? _c("td", [_vm._v(_vm._s(user.name))])
+                                        : _vm._e()
+                                    }),
+                                    _vm._v(" "),
+                                    _vm._l(_vm.users, function(user) {
+                                      return user.id === jobs.client_id
+                                        ? _c("td", [_vm._v(_vm._s(user.name))])
+                                        : _vm._e()
+                                    }),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(_vm._s(jobs.description))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", [_vm._v(_vm._s(jobs.rating))]),
+                                    _vm._v(" "),
+                                    _c("td", [_vm._v(_vm._s(jobs.created_at))]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "td",
+                                      {
+                                        staticClass:
+                                          "justify-center layout px-0"
+                                      },
+                                      [
+                                        _c(
+                                          "v-btn",
+                                          {
+                                            staticClass: "mx-0",
+                                            attrs: { icon: "" },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.ShowJobSt(key)
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "v-icon",
+                                              {
+                                                attrs: {
+                                                  color: "blue darken-2"
+                                                }
+                                              },
+                                              [_vm._v("visibility")]
+                                            )
+                                          ],
+                                          1
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ],
+                                  2
+                                )
+                              ])
+                            })
+                      ],
+                      2
+                    )
+                  ])
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("ShowJob", {
+        attrs: {
+          openProRequest: _vm.JobDialog,
+          users: _vm.users,
+          showD: _vm.editedItemCon,
+          allDets: _vm.AllJobsDisp,
+          test: _vm.editedItem
+        },
+        on: { closeRequestD: _vm.closeD }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-31a9f8ea", module.exports)
+  }
+}
+
+/***/ }),
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(160)
+var __vue_script__ = __webpack_require__(135)
 /* template */
-var __vue_template__ = __webpack_require__(161)
+var __vue_template__ = __webpack_require__(136)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79914,11 +79909,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 160 */
+/* 135 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -80069,6 +80070,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       e1: true,
       loader: false,
+      loading: false,
       list: {},
       emailRules: [function (v) {
         return !!v || 'E-mail is required';
@@ -80088,16 +80090,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     update: function update() {
       var _this = this;
 
+      this.loading = true;
       axios.patch('/users/' + this.editedItemCon.id, { form: this.editedItemCon, location: this.address }).then(function (response) {
         // console.log(response);
-        _this.loader = false;
+        _this.loading = false;
         _this.close;
-        // this.resetForm();
+        _this.resetForm();
         _this.$emit('closeRequest');
         _this.$emit('alertRequest');
+        // Object.assign(this.$parent.JobsDisp[this.$parent.editedIndex], this.$parent.editedItem)
       }).catch(function (error) {
         _this.errors = error.response.data.errors;
-        _this.loader = false;
+        _this.loading = false;
       });
     },
 
@@ -80113,7 +80117,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 161 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -80438,7 +80442,12 @@ var render = function() {
               _c(
                 "v-btn",
                 {
-                  attrs: { color: "primary", flat: "" },
+                  attrs: {
+                    color: "primary",
+                    flat: "",
+                    loading: _vm.loading,
+                    disabled: _vm.loading
+                  },
                   on: { click: _vm.update }
                 },
                 [_vm._v("Add")]
@@ -80464,19 +80473,337 @@ if (false) {
 }
 
 /***/ }),
-/* 162 */
+/* 137 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "v-content",
+        [
+          _c(
+            "v-container",
+            { attrs: { fluid: "", "fill-height": "" } },
+            [
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.loader,
+                      expression: "loader"
+                    }
+                  ],
+                  staticStyle: { "text-align": "center" }
+                },
+                [
+                  _c("v-progress-circular", {
+                    staticStyle: { margin: "1rem" },
+                    attrs: { width: 3, indeterminate: "", color: "red" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-layout",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: !_vm.loader,
+                      expression: "!loader"
+                    }
+                  ],
+                  attrs: { "justify-center": "", "align-center": "" }
+                },
+                [
+                  _c("div", { staticClass: "container" }, [
+                    _c(
+                      "div",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: !_vm.loader,
+                            expression: "!loader"
+                          }
+                        ]
+                      },
+                      [
+                        _c(
+                          "v-card-title",
+                          [
+                            _c("v-spacer"),
+                            _vm._v(" "),
+                            _c("v-text-field", {
+                              attrs: {
+                                "append-icon": "search",
+                                label: "Search",
+                                "single-line": "",
+                                "hide-details": ""
+                              },
+                              model: {
+                                value: _vm.search,
+                                callback: function($$v) {
+                                  _vm.search = $$v
+                                },
+                                expression: "search"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-data-table",
+                          {
+                            staticClass: "elevation-1",
+                            attrs: {
+                              headers: _vm.headers,
+                              items: _vm.Allusers,
+                              search: _vm.search,
+                              counter: ""
+                            },
+                            scopedSlots: _vm._u([
+                              {
+                                key: "items",
+                                fn: function(props) {
+                                  return [
+                                    _c("td", [
+                                      _vm._v(
+                                        "\n          " +
+                                          _vm._s(props.item.name) +
+                                          "\n        "
+                                      )
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", { staticClass: "text-xs-right" }, [
+                                      _vm._v(_vm._s(props.item.email))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", { staticClass: "text-xs-right" }, [
+                                      _vm._v(_vm._s(props.item.id_no))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", { staticClass: "text-xs-right" }, [
+                                      _vm._v(_vm._s(props.item.phone))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", { staticClass: "text-xs-right" }, [
+                                      _vm._v(_vm._s(props.item.rating))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", { staticClass: "text-xs-right" }, [
+                                      _vm._v(_vm._s(props.item.locality))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", { staticClass: "text-xs-right" }, [
+                                      _vm._v(_vm._s(props.item.status))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "td",
+                                      {
+                                        staticClass:
+                                          "justify-center layout px-0"
+                                      },
+                                      [
+                                        _c(
+                                          "v-btn",
+                                          {
+                                            staticClass: "mx-0",
+                                            attrs: { icon: "" },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.giveJob(props.item)
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "v-icon",
+                                              {
+                                                attrs: {
+                                                  color: "blue darken-2"
+                                                }
+                                              },
+                                              [_vm._v("add")]
+                                            )
+                                          ],
+                                          1
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "v-btn",
+                                          {
+                                            staticClass: "mx-0",
+                                            attrs: { icon: "" },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.ShowJobSt(props.item)
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "v-icon",
+                                              {
+                                                attrs: {
+                                                  color: "blue darken-2"
+                                                }
+                                              },
+                                              [_vm._v("visibility")]
+                                            )
+                                          ],
+                                          1
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                }
+                              },
+                              {
+                                key: "pageText",
+                                fn: function(ref) {
+                                  var pageStart = ref.pageStart
+                                  var pageStop = ref.pageStop
+                                  return [
+                                    _vm._v(
+                                      "\n       From " +
+                                        _vm._s(pageStart) +
+                                        " to " +
+                                        _vm._s(pageStop) +
+                                        "\n     "
+                                    )
+                                  ]
+                                }
+                              }
+                            ])
+                          },
+                          [
+                            _c(
+                              "v-alert",
+                              {
+                                attrs: {
+                                  slot: "no-results",
+                                  value: true,
+                                  color: "error",
+                                  icon: "warning"
+                                },
+                                slot: "no-results"
+                              },
+                              [
+                                _vm._v(
+                                  '\n       Your search for "' +
+                                    _vm._s(_vm.search) +
+                                    '" found no results.\n     '
+                                )
+                              ]
+                            )
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-snackbar",
+            {
+              attrs: {
+                timeout: _vm.timeout,
+                bottom: "",
+                color: _vm.color,
+                left: ""
+              },
+              model: {
+                value: _vm.snackbar,
+                callback: function($$v) {
+                  _vm.snackbar = $$v
+                },
+                expression: "snackbar"
+              }
+            },
+            [
+              _vm._v("\n" + _vm._s(_vm.message) + "\n"),
+              _c("v-icon", { attrs: { dark: "", right: "" } }, [
+                _vm._v("check_circle")
+              ])
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("AddJob", {
+        attrs: { openAddRequest: _vm.dispAdd, editedItemCon: _vm.editedItem },
+        on: { closeRequest: _vm.close, alertRequest: _vm.showAlert }
+      }),
+      _vm._v(" "),
+      _c("EditJob", {
+        attrs: { openEditRequest: _vm.pdialog2, editedItemCon: _vm.editedItem },
+        on: { closeRequest: _vm.close }
+      }),
+      _vm._v(" "),
+      _c("JobShow", {
+        attrs: {
+          AllJobsDisp: _vm.JobsDisp,
+          openRequest: _vm.JobDialog,
+          users: _vm.Allusers,
+          editedItemCon: _vm.editedItem
+        },
+        on: { closeRequest: _vm.close }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2ae025ee", module.exports)
+  }
+}
+
+/***/ }),
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(139)
+}
 var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(163)
+var __vue_script__ = __webpack_require__(141)
 /* template */
-var __vue_template__ = __webpack_require__(164)
+var __vue_template__ = __webpack_require__(142)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
 var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
@@ -80489,7 +80816,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\components\\jobs\\JobShow.vue"
+Component.options.__file = "resources\\assets\\js\\components\\mechanics\\Mechanics.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -80498,9 +80825,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-31a9f8ea", Component.options)
+    hotAPI.createRecord("data-v-fcfe00ca", Component.options)
   } else {
-    hotAPI.reload("data-v-31a9f8ea", Component.options)
+    hotAPI.reload("data-v-fcfe00ca", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -80511,7 +80838,47 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 163 */
+/* 139 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(140);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("ce9fcd2e", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-fcfe00ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Mechanics.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-fcfe00ca\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Mechanics.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 140 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\nbody {background: #EAEAEA;\n}\n.user-details {position: relative; padding: 0;\n}\n.user-details .user-image {position: relative;  z-index: 1; width: 100%; text-align: center;\n}\n.user-image img { clear: both; margin: auto; position: relative;\n}\n.user-details .user-info-block {width: 100%; position: absolute; top: 55px; background: rgb(255, 255, 255); z-index: 0; padding-top: 35px;\n}\n.user-info-block .user-heading {width: 100%; text-align: center; margin: 10px 0 0;\n}\n.user-info-block .navigation {float: left; width: 100%; margin: 0; padding: 0; list-style: none; border-bottom: 1px solid #428BCA; border-top: 1px solid #428BCA;\n}\n.navigation li {float: left; margin: 0; padding: 0;\n}\n.navigation li a {padding: 20px 30px; float: left;\n}\n.navigation li.active a {background: #428BCA; color: #fff;\n}\n.user-info-block .user-body {float: left; padding: 5%; width: 90%;\n}\n.user-body .tab-content > div {float: left; width: 100%;\n}\n.user-body .tab-content h4 {width: 100%; margin: 10px 0; color: #333;\n}\r\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 141 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -80584,62 +80951,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
-var ShowJob = __webpack_require__(156);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['openRequest', 'editedItemCon', 'users', 'AllJobsDisp'],
-  components: {
-    ShowJob: ShowJob
-  },
+  props: ['user', 'role'],
   data: function data() {
     return {
-      JobDialog: false,
-      dialog: false,
-      AllJobs: [],
-      JobsDisp: [],
-      editedItem: {}
+      Allcommments: {}
     };
   },
-
-
-  methods: {
-    ShowJobSt: function ShowJobSt(key) {
-      // this.editedItem = Object.assign({}, item)
-      // this.editedIndex = this.AllJobs.indexOf(item)
-      console.log(this.AllJobsDisp[key]);
-      this.$children[0].list = this.AllJobsDisp[key];
-      // console.log(this.editedItem);
-      this.JobDialog = true;
-
-      /*axios.post(`getJobs/${this.editedItem.id}`)
-      .then((response) => {
-        this.JobsDisp = response.data
-      })
-      .catch((error) => {
-        this.errors = error.response.data.errors
-      })*/
-    },
-    close: function close() {
-      this.$emit('closeRequest');
-    },
-    closeD: function closeD() {
-      this.JobDialog = false;
-    }
-  },
-
   mounted: function mounted() {
-    /*axios.post(`getJobs/${this.editedItemCon.id}`)
-    .then((response) => {
-      this.AllJobs = response.data
-    })
-    .catch((error) => {
-      this.errors = error.response.data.errors
-    })*/
+    var _this = this;
+
+    axios.post('getAllComments/' + this.user.id).then(function (response) {
+      _this.Allcommments = response.data;
+    }).catch(function (error) {
+      _this.errors = error.response.data.errors;
+    });
   }
 });
 
 /***/ }),
-/* 164 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -80650,102 +80988,1744 @@ var render = function() {
     "div",
     [
       _c(
-        "v-layout",
-        { attrs: { row: "", "justify-center": "" } },
+        "v-content",
         [
+          _c(
+            "v-container",
+            { attrs: { fluid: "", "fill-height": "" } },
+            [
+              _c("v-layout", { attrs: { row: "", "justify-center": "" } }, [
+                _c("div", { staticClass: "container" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-md-12 user-details" }, [
+                      _c("div", { staticClass: "user-image" }, [
+                        _c("img", {
+                          staticClass: "img-circle",
+                          staticStyle: { width: "100px", height: "100px" },
+                          attrs: {
+                            src: _vm.user.profile,
+                            alt: "Karan Singh Sisodia",
+                            title: "Karan Singh Sisodia"
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "user-info-block" }, [
+                        _c("div", { staticClass: "user-heading" }, [
+                          _c("h3", [_vm._v(_vm._s(_vm.user.name))]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "help-block" }, [
+                            _vm._v(_vm._s(_vm.user.email))
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("ul", { staticClass: "navigation" }, [
+                          _c("li", { staticClass: "active" }, [
+                            _c(
+                              "a",
+                              {
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  href: "#information"
+                                }
+                              },
+                              [
+                                _c("span", {
+                                  staticClass: "glyphicon glyphicon-user"
+                                })
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _c(
+                              "a",
+                              {
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  href: "#settings"
+                                }
+                              },
+                              [
+                                _c("span", {
+                                  staticClass: "glyphicon glyphicon-comment"
+                                })
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _c(
+                              "a",
+                              {
+                                attrs: { "data-toggle": "tab", href: "#email" }
+                              },
+                              [
+                                _c("span", {
+                                  staticClass: "glyphicon glyphicon-envelope"
+                                })
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _c(
+                              "a",
+                              {
+                                attrs: { "data-toggle": "tab", href: "#events" }
+                              },
+                              [
+                                _c("span", {
+                                  staticClass: "glyphicon glyphicon-calendar"
+                                })
+                              ]
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "user-body" }, [
+                          _c("div", { staticClass: "tab-content" }, [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "tab-pane active",
+                                attrs: { id: "information" }
+                              },
+                              [
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass: "col-md-3 offset-md-1",
+                                    staticStyle: {
+                                      background: "indigo",
+                                      color: "#fff",
+                                      height: "100px"
+                                    },
+                                    attrs: { id: "tabs" }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "glyphicon glyphicon-check",
+                                      staticStyle: { "font-size": "80px" }
+                                    }),
+                                    _vm._v(
+                                      "10\n                                          Jobs Completed\n                                       "
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass: "col-md-3 offset-md-1",
+                                    staticStyle: {
+                                      background: "orange",
+                                      color: "#fff",
+                                      height: "100px"
+                                    },
+                                    attrs: { id: "tabs" }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "glyphicon glyphicon-star",
+                                      staticStyle: { "font-size": "80px" }
+                                    }),
+                                    _vm._v(
+                                      "Rating" +
+                                        _vm._s(_vm.user.rating) +
+                                        "\n                                       "
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass: "col-md-3 offset-md-1",
+                                    staticStyle: {
+                                      background: "blue",
+                                      color: "#fff",
+                                      height: "100px"
+                                    },
+                                    attrs: { id: "tabs" }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-places",
+                                      staticStyle: { "font-size": "80px" }
+                                    }),
+                                    _vm._v(
+                                      "10\n                                          " +
+                                        _vm._s(_vm.user.locality) +
+                                        "\n                                       "
+                                    )
+                                  ]
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "tab-pane",
+                                attrs: { id: "settings" }
+                              },
+                              _vm._l(_vm.Allcommments, function(item) {
+                                return _c("p")
+                              })
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "tab-pane",
+                                attrs: { id: "email" }
+                              },
+                              [_c("h4", [_vm._v("Message")])]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "tab-pane",
+                                attrs: { id: "events" }
+                              },
+                              [_c("h4", [_vm._v("Events")])]
+                            )
+                          ])
+                        ])
+                      ])
+                    ])
+                  ])
+                ])
+              ])
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-fcfe00ca", module.exports)
+  }
+}
+
+/***/ }),
+/* 143 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(144)
+/* template */
+var __vue_template__ = __webpack_require__(151)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\emails\\Subscribe.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6a529688", Component.options)
+  } else {
+    hotAPI.reload("data-v-6a529688", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 144 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+var AddSubscribers = __webpack_require__(145);
+var Unsubscribed = __webpack_require__(148);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['user', 'role'],
+  components: {
+    AddSubscribers: AddSubscribers, Unsubscribed: Unsubscribed
+  },
+
+  data: function data() {
+    var defaultForm = Object.freeze({
+      title: '',
+      content: ''
+    });
+    return {
+      defaultForm: defaultForm,
+      loading: false,
+      errors: {},
+      form: Object.assign({}, defaultForm),
+      OpenAdd: false,
+      OpenUns: false,
+      maildialog: false,
+      Mailloader: false,
+      search: '',
+      snackbar: false,
+      timeout: 5000,
+      message: 'Success',
+      color: 'black',
+      y: 'bottom',
+      x: 'left',
+      headers: [{
+        text: 'User Name',
+        align: 'left',
+        value: 'name'
+      }, { text: 'Email', value: 'email' }, { text: 'Subscribed on', value: 'created_at' }, { text: 'Actions', value: 'name', sortable: false }],
+      AllSubscribers: [],
+      AllUnSubscribed: [],
+      editedIndex: -1,
+      loader: false,
+      editedItem: {},
+      emailRules: [function (v) {
+        return !!v || 'E-mail is required';
+      }, function (v) {
+        return (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        );
+      }],
+      rules: {
+        name: [function (val) {
+          return (val || '').length > 0 || 'This field is required';
+        }]
+      }
+    };
+  },
+
+
+  watch: {
+    dialog: function dialog(val) {
+      val || this.close();
+    }
+  },
+
+  methods: _defineProperty({
+    sendmail: function sendmail() {
+      var _this = this;
+
+      this.loading = true;
+      axios.post('/sendmail', this.$data.form).then(function (response) {
+        _this.loading = false;
+        console.log(response);
+        // this.$parent.AllCompanies.push(response.data) 
+        // this.close();
+        // this.resetForm();
+        // this.close()
+        _this.color = 'indigo';
+        _this.message = 'Sent';
+        _this.snackbar = true;
+      }).catch(function (error) {
+        _this.errors = error.response.data.errors;
+        // this.close()
+        _this.color = 'red';
+        _this.message = 'Something went wrong';
+        _this.snackbar = true;
+        _this.loading = false;
+      });
+    },
+    resetForm: function resetForm() {
+      this.form = Object.assign({}, this.defaultForm);
+      this.$refs.form.reset();
+    },
+    openModalAdd: function openModalAdd() {
+      this.OpenAdd = true;
+    },
+    openModalMail: function openModalMail() {
+      this.maildialog = true;
+    },
+    openModalUns: function openModalUns() {
+      this.OpenUns = true;
+    },
+    alert: function alert() {
+      this.message = 'Thanks for subscribing';
+      this.color = 'black';
+      this.snackbar = true;
+    },
+    close: function close() {
+      var _this2 = this;
+
+      this.OpenAdd = this.OpenUns = false;
+      setTimeout(function () {
+        _this2.editedItem = Object.assign({}, _this2.defaultItem);
+        _this2.editedIndex = -1;
+      }, 300);
+    },
+    deleteItem: function deleteItem(item) {
+      var _this3 = this;
+
+      var index = this.AllSubscribers.indexOf(item);
+      if (confirm('Are you sure you want to delete this item?')) {
+        axios.delete('/email/' + item.id).then(function (response) {
+          _this3.message = 'Deleted';
+          _this3.color = 'black';
+          _this3.snackbar = true;
+          // console.log(response);
+        }).catch(function (error) {
+          _this3.errors = error.response.data.errors;
+          _this3.message = 'something went wrong';
+          _this3.color = 'red';
+          _this3.snackbar = true;
+        });
+      }
+      // confirm('Are you sure you want to delete this item?') && this.AllSubscribers.splice(index, 1)
+    }
+  }, 'resetForm', function resetForm() {
+    this.form = Object.assign({}, this.defaultForm);
+    this.$refs.form.reset();
+  }),
+  mounted: function mounted() {
+    var _this4 = this;
+
+    this.loader = true;
+    axios.post('getsubscribers').then(function (response) {
+      _this4.AllSubscribers = response.data;
+      _this4.loader = false;
+    }).catch(function (error) {
+      _this4.errors = error.response.data.errors;
+      _this4.loader = false;
+    });
+
+    axios.post('getunsubscribed').then(function (response) {
+      _this4.AllUnSubscribed = response.data;
+      _this4.loader = false;
+    }).catch(function (error) {
+      _this4.errors = error.response.data.errors;
+      _this4.loader = false;
+    });
+  },
+
+  computed: {
+    formIsValid: function formIsValid() {
+      return this.form.title && this.form.content;
+    }
+  }
+
+  /*beforeRouteEnter(to, from, next) {
+   next(vm => {
+    if (vm.role === 'Admin') {
+      next(); 
+    } else {
+      next('/');
+    }
+  })
+  }*/
+});
+
+/***/ }),
+/* 145 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(146)
+/* template */
+var __vue_template__ = __webpack_require__(147)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\emails\\AddSubscribers.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6d91fda8", Component.options)
+  } else {
+    hotAPI.reload("data-v-6d91fda8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 146 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = (_defineProperty({
+  props: ['openAddRequest', 'Subscribers'],
+  data: function data() {
+    var defaultForm = Object.freeze({
+      name: '',
+      email: ''
+    });
+    return {
+      defaultForm: defaultForm,
+      errors: {},
+      loader: false,
+      e1: false,
+      form: Object.assign({}, defaultForm),
+      emailRules: [function (v) {
+        return !!v || 'E-mail is required';
+      }, function (v) {
+        return (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        );
+      }],
+      rules: {
+        name: [function (val) {
+          return (val || '').length > 0 || 'This field is required';
+        }]
+      }
+    };
+  },
+
+  methods: {
+    save: function save() {
+      var _this = this;
+
+      axios.post('/subscribe', this.$data.form).then(function (response) {
+        _this.loader = false;
+        console.log(response);
+        _this.$parent.AllSubscribers.push(response.data);
+        // this.close;
+        _this.resetForm();
+        _this.$emit('closeRequest');
+        _this.$emit('alertRequest');
+      }).catch(function (error) {
+        _this.errors = error.response.data.errors;
+        _this.loader = false;
+      });
+    },
+    resetForm: function resetForm() {
+      this.form = Object.assign({}, this.defaultForm);
+      this.$refs.form.reset();
+    },
+    close: function close() {
+      this.$emit('closeRequest');
+    }
+  },
+  mounted: function mounted() {},
+
+  computed: {
+    formIsValid: function formIsValid() {
+      return this.form.name && this.form.email;
+    }
+  }
+}, 'mounted', function mounted() {}));
+
+/***/ }),
+/* 147 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "v-layout",
+    { attrs: { row: "", "justify-center": "" } },
+    [
+      _c(
+        "v-dialog",
+        {
+          attrs: { persistent: "", "max-width": "700px" },
+          model: {
+            value: _vm.openAddRequest,
+            callback: function($$v) {
+              _vm.openAddRequest = $$v
+            },
+            expression: "openAddRequest"
+          }
+        },
+        [
+          _c(
+            "v-card",
+            [
+              _c("v-card-title", { attrs: { fixed: "" } }, [
+                _c("span", { staticClass: "headline" }, [
+                  _vm._v("Add Subscribers")
+                ])
+              ]),
+              _vm._v(" "),
+              _c(
+                "v-card-text",
+                [
+                  _c(
+                    "v-container",
+                    { attrs: { "grid-list-md": "" } },
+                    [
+                      _c(
+                        "v-layout",
+                        {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: !_vm.loader,
+                              expression: "!loader"
+                            }
+                          ],
+                          attrs: { wrap: "" }
+                        },
+                        [
+                          _c(
+                            "v-form",
+                            {
+                              ref: "form",
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                }
+                              }
+                            },
+                            [
+                              _c(
+                                "v-container",
+                                { attrs: { "grid-list-xl": "", fluid: "" } },
+                                [
+                                  _c(
+                                    "v-layout",
+                                    { attrs: { wrap: "" } },
+                                    [
+                                      _c(
+                                        "v-flex",
+                                        { attrs: { xs12: "", sm6: "" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              rules: _vm.rules.name,
+                                              color: "purple darken-2",
+                                              label: "Full name",
+                                              required: ""
+                                            },
+                                            model: {
+                                              value: _vm.form.name,
+                                              callback: function($$v) {
+                                                _vm.$set(_vm.form, "name", $$v)
+                                              },
+                                              expression: "form.name"
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _vm.errors.name
+                                            ? _c(
+                                                "small",
+                                                {
+                                                  staticClass: "has-text-danger"
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    _vm._s(_vm.errors.name[0])
+                                                  )
+                                                ]
+                                              )
+                                            : _vm._e()
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-flex",
+                                        { attrs: { xs12: "", sm6: "" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              rules: _vm.emailRules,
+                                              color: "blue darken-2",
+                                              label: "Email",
+                                              required: ""
+                                            },
+                                            model: {
+                                              value: _vm.form.email,
+                                              callback: function($$v) {
+                                                _vm.$set(_vm.form, "email", $$v)
+                                              },
+                                              expression: "form.email"
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _vm.errors.email
+                                            ? _c(
+                                                "small",
+                                                {
+                                                  staticClass: "has-text-danger"
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    _vm._s(_vm.errors.email[0])
+                                                  )
+                                                ]
+                                              )
+                                            : _vm._e()
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-actions",
+                                [
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: { flat: "" },
+                                      on: { click: _vm.resetForm }
+                                    },
+                                    [_vm._v("reset")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: { flat: "" },
+                                      on: { click: _vm.close }
+                                    },
+                                    [_vm._v("Close")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("v-spacer"),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        disabled: !_vm.formIsValid,
+                                        flat: "",
+                                        color: "primary"
+                                      },
+                                      on: { click: _vm.save }
+                                    },
+                                    [_vm._v("Subscribe")]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: _vm.loader,
+                              expression: "loader"
+                            }
+                          ],
+                          staticStyle: { "text-align": "center", width: "100%" }
+                        },
+                        [
+                          _c("v-progress-circular", {
+                            staticStyle: { margin: "1rem" },
+                            attrs: { width: 3, indeterminate: "", color: "red" }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-6d91fda8", module.exports)
+  }
+}
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(149)
+/* template */
+var __vue_template__ = __webpack_require__(150)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\emails\\Unsubscribed.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-127770b1", Component.options)
+  } else {
+    hotAPI.reload("data-v-127770b1", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 149 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['openUnRequest', 'Unsubscribed'],
+  data: function data() {
+    return {
+      search: '',
+      headers: [{
+        text: 'User Name',
+        align: 'left',
+        value: 'name'
+      }, { text: 'Email', value: 'email' }, { text: 'UnSubscribed On', value: 'deleted_at' }, { text: 'Actions', value: 'name', sortable: false }]
+    };
+  },
+
+  methods: {
+    refresh: function refresh(item) {
+      var _this = this;
+
+      var index = this.Unsubscribed.indexOf(item);
+      if (confirm('Are you sure you want to subscribe this user?')) {
+        axios.post('/refresh/' + item.id).then(function (response) {
+          _this.message = 'Subscribe success';
+          _this.color = 'black';
+          _this.snackbar = true;
+          // console.log(response);
+        }).catch(function (error) {
+          _this.errors = error.response.data.errors;
+          _this.message = 'something went wrong';
+          _this.color = 'red';
+          _this.snackbar = true;
+        });
+      }
+      // confirm('Are you sure you want to delete this item?') && this.AllSubscribers.splice(index, 1)
+    },
+    close: function close() {
+      this.$emit('closeRequest');
+    }
+  }
+});
+
+/***/ }),
+/* 150 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "v-dialog",
+    {
+      attrs: {
+        fullscreen: "",
+        "hide-overlay": "",
+        transition: "dialog-bottom-transition"
+      },
+      model: {
+        value: _vm.openUnRequest,
+        callback: function($$v) {
+          _vm.openUnRequest = $$v
+        },
+        expression: "openUnRequest"
+      }
+    },
+    [
+      _c(
+        "v-card",
+        [
+          _c(
+            "v-toolbar",
+            { attrs: { dark: "", color: "primary" } },
+            [
+              _c(
+                "v-btn",
+                {
+                  attrs: { icon: "", dark: "" },
+                  nativeOn: {
+                    click: function($event) {
+                      return _vm.close($event)
+                    }
+                  }
+                },
+                [_c("v-icon", [_vm._v("close")])],
+                1
+              ),
+              _vm._v(" "),
+              _c("v-toolbar-title", [_vm._v("Unsubscribed")]),
+              _vm._v(" "),
+              _c("v-spacer"),
+              _vm._v(" "),
+              _c(
+                "v-toolbar-items",
+                [
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { dark: "", flat: "" },
+                      nativeOn: {
+                        click: function($event) {
+                          return _vm.subscribe($event)
+                        }
+                      }
+                    },
+                    [_vm._v("Save")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-card",
+        { staticStyle: { "margin-top": "-400px !important" } },
+        [
+          _c(
+            "v-flex",
+            { attrs: { sm8: "", "offset-sm2": "" } },
+            [
+              _c(
+                "v-card-title",
+                [
+                  _vm._v("\n        UnSubscribed\n        "),
+                  _c("v-spacer"),
+                  _vm._v(" "),
+                  _c("v-text-field", {
+                    attrs: {
+                      "append-icon": "search",
+                      label: "Search",
+                      "single-line": "",
+                      "hide-details": ""
+                    },
+                    model: {
+                      value: _vm.search,
+                      callback: function($$v) {
+                        _vm.search = $$v
+                      },
+                      expression: "search"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-data-table",
+                {
+                  staticClass: "elevation-1",
+                  attrs: {
+                    headers: _vm.headers,
+                    items: _vm.Unsubscribed,
+                    search: _vm.search,
+                    counter: ""
+                  },
+                  scopedSlots: _vm._u([
+                    {
+                      key: "items",
+                      fn: function(props) {
+                        return [
+                          _c("td", [_vm._v(_vm._s(props.item.name))]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-xs-right" }, [
+                            _vm._v(_vm._s(props.item.email))
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-xs-right" }, [
+                            _vm._v(_vm._s(props.item.deleted_at))
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            { staticClass: "justify-center layout px-0" },
+                            [
+                              _c(
+                                "v-btn",
+                                {
+                                  staticClass: "mx-0",
+                                  attrs: { icon: "" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.refresh(props.item)
+                                    }
+                                  }
+                                },
+                                [
+                                  _c(
+                                    "v-icon",
+                                    { attrs: { color: "pink darken-2" } },
+                                    [_vm._v("refresh")]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ]
+                      }
+                    },
+                    {
+                      key: "pageText",
+                      fn: function(ref) {
+                        var pageStart = ref.pageStart
+                        var pageStop = ref.pageStop
+                        return [
+                          _vm._v(
+                            "\n        From " +
+                              _vm._s(pageStart) +
+                              " to " +
+                              _vm._s(pageStop) +
+                              "\n      "
+                          )
+                        ]
+                      }
+                    }
+                  ])
+                },
+                [
+                  _c(
+                    "v-alert",
+                    {
+                      attrs: {
+                        slot: "no-results",
+                        value: true,
+                        color: "error",
+                        icon: "warning"
+                      },
+                      slot: "no-results"
+                    },
+                    [
+                      _vm._v(
+                        '\n        Your search for "' +
+                          _vm._s(_vm.search) +
+                          '" found no results.\n      '
+                      )
+                    ]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-127770b1", module.exports)
+  }
+}
+
+/***/ }),
+/* 151 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "v-content",
+        [
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.loader,
+                  expression: "loader"
+                }
+              ],
+              staticStyle: { "text-align": "center", width: "100%" }
+            },
+            [
+              _c("v-progress-circular", {
+                staticStyle: { margin: "1rem" },
+                attrs: { width: 3, indeterminate: "", color: "red" }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
           _c(
             "v-dialog",
             {
-              attrs: {
-                fullscreen: "",
-                "hide-overlay": "",
-                transition: "dialog-bottom-transition"
-              },
+              attrs: { persistent: "", "max-width": "400px" },
               model: {
-                value: _vm.openRequest,
+                value: _vm.maildialog,
                 callback: function($$v) {
-                  _vm.openRequest = $$v
+                  _vm.maildialog = $$v
                 },
-                expression: "openRequest"
+                expression: "maildialog"
               }
             },
             [
               _c(
-                "v-card",
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.Mailloader,
+                      expression: "Mailloader"
+                    }
+                  ],
+                  staticStyle: { "text-align": "center", width: "100%" }
+                },
                 [
+                  _c("v-progress-circular", {
+                    staticStyle: { margin: "1rem" },
+                    attrs: { width: 3, indeterminate: "", color: "red" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-card",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: !_vm.Mailloader,
+                      expression: "!Mailloader"
+                    }
+                  ]
+                },
+                [
+                  _c("v-card-title", [
+                    _c("span", { staticClass: "headline" }, [
+                      _vm._v("User Subscription")
+                    ])
+                  ]),
+                  _vm._v(" "),
                   _c(
-                    "v-toolbar",
-                    { attrs: { dark: "", color: "primary" } },
+                    "v-card-text",
                     [
                       _c(
-                        "v-btn",
+                        "v-container",
+                        { attrs: { "grid-list-md": "" } },
+                        [
+                          _c(
+                            "v-layout",
+                            { attrs: { wrap: "" } },
+                            [
+                              _c(
+                                "v-form",
+                                {
+                                  ref: "form",
+                                  on: {
+                                    submit: function($event) {
+                                      $event.preventDefault()
+                                    }
+                                  }
+                                },
+                                [
+                                  _c(
+                                    "v-flex",
+                                    { attrs: { xs12: "", sm12: "" } },
+                                    [
+                                      _c("v-text-field", {
+                                        attrs: {
+                                          rules: _vm.rules.name,
+                                          color: "blue darken-2",
+                                          label: "Title",
+                                          required: ""
+                                        },
+                                        model: {
+                                          value: _vm.form.title,
+                                          callback: function($$v) {
+                                            _vm.$set(_vm.form, "title", $$v)
+                                          },
+                                          expression: "form.title"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _vm.errors.title
+                                        ? _c(
+                                            "small",
+                                            { staticClass: "has-text-danger" },
+                                            [
+                                              _vm._v(
+                                                _vm._s(_vm.errors.title[0])
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-flex",
+                                    { attrs: { xs12: "" } },
+                                    [
+                                      _c(
+                                        "v-text-field",
+                                        {
+                                          attrs: {
+                                            color: "blue",
+                                            "multi-line": ""
+                                          },
+                                          model: {
+                                            value: _vm.form.content,
+                                            callback: function($$v) {
+                                              _vm.$set(_vm.form, "content", $$v)
+                                            },
+                                            expression: "form.content"
+                                          }
+                                        },
+                                        [
+                                          _c(
+                                            "div",
+                                            {
+                                              attrs: { slot: "label" },
+                                              slot: "label"
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                         Content\n                       "
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _vm.errors.content
+                                        ? _c(
+                                            "small",
+                                            { staticClass: "has-text-danger" },
+                                            [
+                                              _vm._v(
+                                                _vm._s(_vm.errors.content[0])
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-card-actions",
+                                    [
+                                      _c(
+                                        "v-btn",
+                                        {
+                                          attrs: { flat: "" },
+                                          on: { click: _vm.resetForm }
+                                        },
+                                        [_vm._v("Cancel")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c("v-spacer"),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-btn",
+                                        {
+                                          attrs: {
+                                            flat: "",
+                                            color: "primary",
+                                            disabled: _vm.loading,
+                                            loading: _vm.loading
+                                          },
+                                          on: { click: _vm.sendmail }
+                                        },
+                                        [_vm._v("Send Mail")]
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-container",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.loader,
+                  expression: "!loader"
+                }
+              ],
+              attrs: { fluid: "", "fill-height": "" }
+            },
+            [
+              _c(
+                "v-layout",
+                { attrs: { "justify-center": "", "align-center": "" } },
+                [
+                  _c(
+                    "div",
+                    {
+                      directives: [
                         {
-                          attrs: { icon: "", dark: "" },
-                          nativeOn: {
-                            click: function($event) {
-                              return _vm.close($event)
+                          name: "show",
+                          rawName: "v-show",
+                          value: !_vm.loader,
+                          expression: "!loader"
+                        }
+                      ]
+                    },
+                    [
+                      _c(
+                        "v-card-title",
+                        [
+                          _vm._v("\n            Subscribers\n            "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { color: "primary", raised: "" },
+                              on: { click: _vm.openModalAdd }
+                            },
+                            [_vm._v("Add Subscribers")]
+                          ),
+                          _vm._v(" "),
+                          _c("v-spacer"),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { color: "primary", flat: "" },
+                              on: { click: _vm.openModalUns }
+                            },
+                            [_vm._v("UnSubscribed")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { color: "primary", flat: "" },
+                              on: { click: _vm.openModalMail }
+                            },
+                            [_vm._v("Send Email")]
+                          ),
+                          _vm._v(" "),
+                          _c("v-spacer"),
+                          _vm._v(" "),
+                          _c("v-text-field", {
+                            attrs: {
+                              "append-icon": "search",
+                              label: "Search",
+                              "single-line": "",
+                              "hide-details": ""
+                            },
+                            model: {
+                              value: _vm.search,
+                              callback: function($$v) {
+                                _vm.search = $$v
+                              },
+                              expression: "search"
                             }
-                          }
-                        },
-                        [_c("v-icon", [_vm._v("close")])],
+                          })
+                        ],
                         1
                       ),
                       _vm._v(" "),
-                      _c("v-toolbar-title", [_vm._v("Jobs")]),
-                      _vm._v(" "),
-                      _c("v-spacer"),
-                      _vm._v(" "),
-                      _c("v-toolbar-items")
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "container" }, [
-                    _c(
-                      "table",
-                      { staticClass: "table table-hover table-stripped" },
-                      [
-                        _c("thead", [
-                          _c("th", [_vm._v("Mechanic")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Client")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Description")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Rating")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Created On")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("#")])
-                        ]),
-                        _vm._v(" "),
-                        _vm.AllJobsDisp.length === 1
-                          ? _c("tbody", [
-                              _c(
-                                "tr",
-                                [
-                                  _vm._l(_vm.users, function(user) {
-                                    return user.id === _vm.jobs.mechanic_id
-                                      ? _c("td", [_vm._v(_vm._s(user.name))])
-                                      : _vm._e()
-                                  }),
+                      _c(
+                        "v-data-table",
+                        {
+                          staticClass: "elevation-1",
+                          attrs: {
+                            headers: _vm.headers,
+                            items: _vm.AllSubscribers,
+                            search: _vm.search,
+                            counter: ""
+                          },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "items",
+                              fn: function(props) {
+                                return [
+                                  _c("td", [_vm._v(_vm._s(props.item.name))]),
                                   _vm._v(" "),
-                                  _vm._l(_vm.users, function(user) {
-                                    return user.id === _vm.jobs.client_id
-                                      ? _c("td", [_vm._v(_vm._s(user.name))])
-                                      : _vm._e()
-                                  }),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(_vm._s(_vm.AllJobsDisp.description))
+                                  _c("td", { staticClass: "text-xs-right" }, [
+                                    _vm._v(_vm._s(props.item.email))
                                   ]),
                                   _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(_vm._s(_vm.AllJobsDisp.rating))
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(_vm._s(_vm.AllJobsDisp.created_at))
+                                  _c("td", { staticClass: "text-xs-right" }, [
+                                    _vm._v(_vm._s(props.item.created_at))
                                   ]),
                                   _vm._v(" "),
                                   _c(
@@ -80761,7 +82741,7 @@ var render = function() {
                                           attrs: { icon: "" },
                                           on: {
                                             click: function($event) {
-                                              _vm.ShowJobSt(_vm.AllJobsDisp.id)
+                                              _vm.deleteItem(props.item)
                                             }
                                           }
                                         },
@@ -80769,9 +82749,9 @@ var render = function() {
                                           _c(
                                             "v-icon",
                                             {
-                                              attrs: { color: "blue darken-2" }
+                                              attrs: { color: "pink darken-2" }
                                             },
-                                            [_vm._v("visibility")]
+                                            [_vm._v("delete")]
                                           )
                                         ],
                                         1
@@ -80779,80 +82759,54 @@ var render = function() {
                                     ],
                                     1
                                   )
-                                ],
-                                2
+                                ]
+                              }
+                            },
+                            {
+                              key: "pageText",
+                              fn: function(ref) {
+                                var pageStart = ref.pageStart
+                                var pageStop = ref.pageStop
+                                return [
+                                  _vm._v(
+                                    "\n          From " +
+                                      _vm._s(pageStart) +
+                                      " to " +
+                                      _vm._s(pageStop) +
+                                      "\n        "
+                                  )
+                                ]
+                              }
+                            }
+                          ])
+                        },
+                        [
+                          _c(
+                            "v-alert",
+                            {
+                              attrs: {
+                                slot: "no-results",
+                                value: true,
+                                color: "error",
+                                icon: "warning"
+                              },
+                              slot: "no-results"
+                            },
+                            [
+                              _vm._v(
+                                '\n          Your search for "' +
+                                  _vm._s(_vm.search) +
+                                  '" found no results.\n        '
                               )
-                            ])
-                          : _vm._l(_vm.AllJobsDisp, function(jobs, key) {
-                              return _c("tbody", { key: jobs.id }, [
-                                _c(
-                                  "tr",
-                                  [
-                                    _vm._l(_vm.users, function(user) {
-                                      return user.id === jobs.mechanic_id
-                                        ? _c("td", [_vm._v(_vm._s(user.name))])
-                                        : _vm._e()
-                                    }),
-                                    _vm._v(" "),
-                                    _vm._l(_vm.users, function(user) {
-                                      return user.id === jobs.client_id
-                                        ? _c("td", [_vm._v(_vm._s(user.name))])
-                                        : _vm._e()
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(_vm._s(jobs.description))
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", [_vm._v(_vm._s(jobs.rating))]),
-                                    _vm._v(" "),
-                                    _c("td", [_vm._v(_vm._s(jobs.created_at))]),
-                                    _vm._v(" "),
-                                    _c(
-                                      "td",
-                                      {
-                                        staticClass:
-                                          "justify-center layout px-0"
-                                      },
-                                      [
-                                        _c(
-                                          "v-btn",
-                                          {
-                                            staticClass: "mx-0",
-                                            attrs: { icon: "" },
-                                            on: {
-                                              click: function($event) {
-                                                _vm.ShowJobSt(key)
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _c(
-                                              "v-icon",
-                                              {
-                                                attrs: {
-                                                  color: "blue darken-2"
-                                                }
-                                              },
-                                              [_vm._v("visibility")]
-                                            )
-                                          ],
-                                          1
-                                        )
-                                      ],
-                                      1
-                                    )
-                                  ],
-                                  2
-                                )
-                              ])
-                            })
-                      ],
-                      2
-                    )
-                  ])
-                ],
-                1
+                            ]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ]
               )
             ],
             1
@@ -80861,16 +82815,44 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c("ShowJob", {
+      _c("AddSubscribers", {
+        attrs: { openAddRequest: _vm.OpenAdd, Subscribers: _vm.AllSubscribers },
+        on: { closeRequest: _vm.close, alertRequest: _vm.alert }
+      }),
+      _vm._v(" "),
+      _c("Unsubscribed", {
         attrs: {
-          openProRequest: _vm.JobDialog,
-          users: _vm.users,
-          showD: _vm.editedItemCon,
-          allDets: _vm.AllJobsDisp,
-          test: _vm.editedItem
+          openUnRequest: _vm.OpenUns,
+          Unsubscribed: _vm.AllUnSubscribed
         },
-        on: { closeRequestD: _vm.closeD }
-      })
+        on: { closeRequest: _vm.close, alertRequest: _vm.alert }
+      }),
+      _vm._v(" "),
+      _c(
+        "v-snackbar",
+        {
+          attrs: {
+            timeout: _vm.timeout,
+            bottom: _vm.y === "bottom",
+            color: _vm.color,
+            left: _vm.x === "left"
+          },
+          model: {
+            value: _vm.snackbar,
+            callback: function($$v) {
+              _vm.snackbar = $$v
+            },
+            expression: "snackbar"
+          }
+        },
+        [
+          _vm._v("\n" + _vm._s(_vm.message) + "\n"),
+          _c("v-btn", { attrs: { flat: "", color: "white" } }, [
+            _vm._v("Close")
+          ])
+        ],
+        1
+      )
     ],
     1
   )
@@ -80881,9 +82863,15 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-31a9f8ea", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-6a529688", module.exports)
   }
 }
+
+/***/ }),
+/* 152 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

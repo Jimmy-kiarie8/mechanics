@@ -10,17 +10,6 @@ use Illuminate\Support\Facades\Auth;
 class CommentsController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Comments  $comments
@@ -71,5 +60,10 @@ class CommentsController extends Controller
     public function getComments()
     {
         return Comments::orderBy('created_at', 'ASC')->get();
+    }
+
+    public function getAllComments(Request $request, Comments $comments, $id)
+    {
+        return Comments::find($id);
     }
 }

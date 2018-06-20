@@ -75,16 +75,6 @@
               <!-- <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small> -->
             </v-flex>
             <v-flex xs12 sm6>
-              <v-text-field
-              v-model="editedItemCon.city"
-              :rules="rules.name"
-              color="blue darken-2"
-              label="City"
-              required
-              ></v-text-field>
-              <!-- <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small> -->
-            </v-flex>
-            <v-flex xs12 sm6>
              <v-slider
              v-model="editedItemCon.age"
              :rules="rules.age"
@@ -133,7 +123,13 @@
       <v-card-actions>
         <v-btn color="primary" flat @click.stop="close">Close</v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="primary" flat @click="update">Add</v-btn>
+        <v-btn 
+          color="primary" 
+          flat 
+          @click="update"
+          :loading="loading"
+          :disabled="loading"
+          >Add</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -148,6 +144,7 @@ export default {
     return{
       e1: true,
       loader: false,
+      loading:false,
       list: {},
       emailRules: [
         v => {
@@ -162,19 +159,21 @@ export default {
   },
   methods: {
     update() {
+      this.loading=true
       axios.patch(`/users/${this.editedItemCon.id}`, {form: this.editedItemCon, location: this.address})
       .then((response) => {
         // console.log(response);
-            this.loader=false
+            this.loading=false
             this.close;
             // this.resetForm();
+            Object.assign(this.$parent.Allusers[this.$parent.editedIndex], this.$parent.editedItem)
             this.$emit('closeRequest');
             this.$emit('alertRequest');
 
       })
       .catch((error) => {
       this.errors = error.response.data.errors
-      this.loader=false
+      this.loading=false
     })
     },
     /*resetForm () {

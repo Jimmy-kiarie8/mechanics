@@ -7,7 +7,7 @@
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
-            <v-layout wrap v-show="!loader">
+            <v-layout wrap>
               <v-form ref="form" @submit.prevent>
                 <v-container grid-list-xl fluid>
                   <v-layout wrap>
@@ -38,9 +38,6 @@
             </v-card-actions>
           </v-form>
         </v-layout>
-       <div v-show="loader" style="text-align: center; width: 100%;">
-           <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
-       </div>
       </v-container>
     </v-card-text>
   </v-card>
@@ -82,16 +79,13 @@ export default {
         this.loading=false
         console.log(response);
         this.$emit('alertRequest');
-        /*this.$parent.Allusers.push(response.data) 
-        this.close;
+        this.$parent.JobsDisp.push(response.data) 
         this.resetForm();
         this.$emit('closeRequest');
-        this.$emit('alertRequest');*/
-
       })
       .catch((error) => {
-        this.errors = error.response.data.errors
         this.loading=false
+        this.errors = error.response.data.errors
       })
     },
     resetForm () {

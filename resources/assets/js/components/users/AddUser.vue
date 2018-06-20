@@ -7,7 +7,7 @@
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
-            <v-layout wrap v-show="!loader">
+            <v-layout wrap>
               <v-form ref="form" @submit.prevent>
                 <v-container grid-list-xl fluid>
                   <v-layout wrap>
@@ -124,7 +124,8 @@
               <v-btn flat @click="close">Close</v-btn>
               <v-spacer></v-spacer>
               <v-btn
-              :disabled="!formIsValid"
+              :disabled="loading"
+              :loading="loading"
               flat
               color="primary"
               @click="save"
@@ -132,9 +133,6 @@
             </v-card-actions>
           </v-form>
         </v-layout>
-       <div v-show="loader" style="text-align: center; width: 100%;">
-           <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
-       </div>
       </v-container>
     </v-card-text>
   </v-card>
@@ -165,7 +163,7 @@ export default {
       companies: {},
       errors: {},
       defaultForm,
-      loader: false,
+      loading: false,
       e1: true,
       form: Object.assign({}, defaultForm),
       emailRules: [
@@ -184,20 +182,21 @@ export default {
   },
   methods: {
     save() {
+      this.loading=true
       axios.post('/users', {form:this.$data.form, location: this.address}).
       then((response) => {
-        this.loader=false
-        console.log(response);
-        /*this.$parent.Allusers.push(response.data) 
-        this.close;
+        this.loading=false
+        console.log(response.data);
+        // this.close;
         this.resetForm();
         this.$emit('closeRequest');
-        this.$emit('alertRequest');*/
+        this.$emit('alertRequest');
+        this.$parent.Allusers.push(response.data.form) 
 
       })
       .catch((error) => {
         this.errors = error.response.data.errors
-        this.loader=false
+        this.loading=false
       })
     },
     resetForm () {

@@ -16,8 +16,15 @@ Route::get('/cv', function () {
     return view('Cv');
 });
 
+Route::get('verifyEmailFirst', 'Auth\RegisterController@verifyEmailFirst')->name('verifyEmailFirst');
+Route::get('/verify/{verifyToken}', 'EmailController@verify')->name('verify');
 
 
+// Socialite
+// Route::get('login/google', 'Auth\LoginController@redirectToProvider');
+// Route::get('login/google/callback', 'Auth\LoginController@handleProviderCallback');
+Route::get('login/{service}', 'Auth\LoginController@redirectToProvider');
+Route::get('login/{service}/callback', 'Auth\LoginController@handleProviderCallback');
 
 Auth::routes();
 Route::group(['middleware' => ['auth']], function () {
@@ -39,6 +46,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::resource('users', 'UserController');
 	Route::resource('file', 'HomeController');
 	Route::resource('jobs', 'JobsController');
+	Route::resource('email', 'EmailController');
 
 
 	Route::post('/getUsers', 'UserController@getUsers')->name('getUsers');
@@ -58,6 +66,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::post('/comments/{id}', 'CommentsController@comments')->name('comments');
 	Route::post('/getComments', 'CommentsController@getComments')->name('getComments');
+	Route::post('/getAllComments/${id}', 'CommentsController@getAllComments')->name('getAllComments');
 
 
 
@@ -78,4 +87,18 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/updateJobTrue/{id}', 'JobsController@updateJobTrue')->name('updateJobTrue');
 	// Route::post('/getJobs/{id}', 'JobsController@getJobs')->name('getJobs');
 	Route::post('/getJobs/{id}', 'JobsController@getJobs')->name('getJobs');
+
+
+	
+	// E-MAILS
+	Route::post('/sendmail', 'EmailController@sendmail')->name('sendmail');
+	Route::post('/getsubscribers', 'EmailController@getsubscribers')->name('getsubscribers');
+	Route::post('/subscribe', 'EmailController@subscribe')->name('subscribe');
+	Route::post('/refresh/{id}', 'EmailController@refresh')->name('refresh');
+
+
+	Route::get('/slack', 'EmailController@slack');
+	Route::get('/slacks', 'EmailController@slacks');
+
+	Route::post('/getunsubscribed', 'EmailController@getunsubscribed')->name('getunsubscribed');
 });

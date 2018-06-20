@@ -133,7 +133,13 @@
       <v-card-actions>
         <v-btn color="primary" flat @click.stop="close">Close</v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="primary" flat @click="update">Add</v-btn>
+        <v-btn 
+          color="primary" 
+          flat 
+          @click="update"
+          :loading="loading"
+          :disabled="loading"
+          >Add</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -148,6 +154,7 @@ export default {
     return{
       e1: true,
       loader: false,
+      loading: false,
       list: {},
       emailRules: [
         v => {
@@ -162,19 +169,20 @@ export default {
   },
   methods: {
     update() {
+      this.loading=true
       axios.patch(`/users/${this.editedItemCon.id}`, {form: this.editedItemCon, location: this.address})
       .then((response) => {
         // console.log(response);
-            this.loader=false
-            this.close;
-            // this.resetForm();
-            this.$emit('closeRequest');
-            this.$emit('alertRequest');
-
+          this.loading=false
+          this.close;
+          this.resetForm();
+          this.$emit('closeRequest');
+          this.$emit('alertRequest');
+          // Object.assign(this.$parent.JobsDisp[this.$parent.editedIndex], this.$parent.editedItem)
       })
       .catch((error) => {
       this.errors = error.response.data.errors
-      this.loader=false
+      this.loading=false
     })
     },
     /*resetForm () {

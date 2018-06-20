@@ -24,7 +24,13 @@
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn color="blue darken-1" flat @click.native="commdialog2 = false">Close</v-btn>
-                  <v-btn color="blue darken-1" flat @click.native="commdialog">Save</v-btn>
+                  <v-btn 
+                    color="blue darken-1" 
+                    flat 
+                    @click.native="commdialog"
+                    :loading="loading"
+                    :disabled="loading"
+                    >Save</v-btn>
                 </v-card-actions>
                 <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>  -->
               </v-flex>
@@ -37,13 +43,13 @@
 
   <v-content>
    <v-container fluid fill-height>
-    <div v-show="loader" style="text-align: center">
+    <div v-show="loader" style="text-align: center; width: 100%; margin-top: 200px;">
       <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
-    </div> 
-    <v-layout justify-center align-center v-show="!loader" >
+    </div>
+    <v-layout justify-center align-center v-show="!loader">
      <div class="container">
        <!-- users display -->
-       <div v-show="!loader">
+       <div>
         <v-card-title>
          <v-btn color="primary" flat @click="openUser">Add User</v-btn>
          <v-spacer></v-spacer>
@@ -146,6 +152,7 @@ export default {
     search: '',
     e1: true,
     loader: false,
+    loading: false,
     dispAdd: false,
     docsdialog2: false,
     pdialog2: false,
@@ -216,15 +223,16 @@ methods: {
 
   // Ratings && Comments
   commdialog() {
-    // this.commdialog2 = true
+    this.loading = true
     axios.post(`/comments/${this.feedback.id}`, this.feedback)
     .then((response) => {
-
+        this.loading = false
         this.message = 'Commented'
         this.color = 'indigo'
         this.snackbar = true
     })
       .catch((error) => {
+        this.loading = false
         this.errors = error.response.data.errors
         this.message = 'something went wrong'
         this.color = 'red'
