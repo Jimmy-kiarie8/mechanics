@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::resource('file', 'HomeController');
 	Route::resource('jobs', 'JobsController');
 	Route::resource('email', 'EmailController');
+	Route::resource('blog', 'BlogController');
 
 
 	Route::post('/getUsers', 'UserController@getUsers')->name('getUsers');
@@ -101,4 +102,17 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/slacks', 'EmailController@slacks');
 
 	Route::post('/getunsubscribed', 'EmailController@getunsubscribed')->name('getunsubscribed');
+
+	// Blog	
+	Route::post('/getBlog', 'BlogController@getBlog')->name('getBlog');
+	Route::post('/blogImage/{id}', 'BlogController@blogImage')->name('blogImage');
+	Route::post('/getImgBlog/{id}', 'BlogController@getImgBlog')->name('getImgBlog');
+	Route::post('/BlogImage', 'BlogController@BlogImage')->name('BlogImage');
+
+	// Blog	Comments
+	Route::post('/getPostCom', 'CommentsController@getPostCom')->name('getPostCom');
+	Route::post('/getSingleCom/{id}', 'CommentsController@getSingleCom')->name('getSingleCom');
+	Route::post('/Postcom/{id}', 'CommentsController@Postcom')->name('Postcom');
+	Route::post('/getBlogC/{id}', 'CommentsController@getBlogC')->name('getBlogC');
+
 });

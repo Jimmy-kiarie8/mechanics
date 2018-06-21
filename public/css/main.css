@@ -201,3 +201,8 @@ div.dataTables_wrapper div.dataTables_filter input {
     color: #fff;
     transition: 1s;
 } */
+
+#image blockquote img{
+  max-height: 400px !important;
+  /*max-width: 500px !important;*/
+}

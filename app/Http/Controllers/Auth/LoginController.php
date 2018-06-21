@@ -65,6 +65,7 @@ class LoginController extends Controller
         } else {
             $user = new User;
             $user->name = $userSocialite->name;
+            $user->profile = $userSocialite->avatar_original;
             $user->email = $userSocialite->email;
             // $user->status = '0';
             $user->password = Hash::make('password');

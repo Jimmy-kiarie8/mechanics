@@ -7,12 +7,16 @@
 
 require('./bootstrap');
  
-window.Vue = require('vue');
+window.Vue = require('vue'); 
 // import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueRouter from 'vue-router'
 import StarRating from 'vue-star-rating'
+// Basic Use - Covers most scenarios
+// import { VueEditor } from 'vue2-editor'
 
+// Advanced Use - Hook into Quill's API for Custom Functionality
+import { VueEditor, Quill } from 'vue2-editor'
 Vue.component('star-rating', StarRating);
 Vue.use(VueRouter) 
 Vue.use(Vuetify)
@@ -37,6 +41,8 @@ let myResumeHome = require('./components/resum/Home.vue')
 let myJob = require('./components/jobs/Job.vue')
 let myMech = require('./components/mechanics/Mechanics.vue')
 let mysubsicriber = require('./components/emails/Subscribe.vue');
+let myBlog = require('./components/blog/Blog.vue');
+let myBlogPost = require('./components/blog/BlogPost.vue');
 
 const routes = [
 	{path: '/', component: myView},
@@ -48,6 +54,8 @@ const routes = [
 	{path: '/jobs', component: myJob},
 	{path: '/mechanics', component: myMech},
 	{path: '/subscribers', component: mysubsicriber },
+	{path: '/blogs', component: myBlog },
+	{path: '/blogpost', component: myBlogPost },
 ]
 const router = new VueRouter({
 // mode: 'history',
@@ -58,6 +66,6 @@ const app = new Vue({
     router,
     components: {
     	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, 
-    	myResumeHome, myJob, myMech, mysubsicriber
+    	myResumeHome, myJob, myMech, mysubsicriber, myBlog, myBlogPost
     }
 });

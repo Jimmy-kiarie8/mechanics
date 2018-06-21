@@ -272,8 +272,8 @@ mounted() {
     this.loader=false
   })
   .catch((error) => {
-    this.errors = error.response.data.errors
     this.loader=false
+    this.errors = error.response.data.errors
   })
 },
  /*beforeRouteEnter(to, from, next) {

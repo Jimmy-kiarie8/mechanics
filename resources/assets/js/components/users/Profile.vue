@@ -214,7 +214,7 @@ export default {
       let reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onload = e => {
-        this.avatar = e.target.result
+        this.form.avatar = e.target.result
       }
       this.imagePlaced = true
       let form = new FormData();

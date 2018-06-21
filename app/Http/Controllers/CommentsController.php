@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BlogComment;
 use App\Comments;
 use App\User;
 use Illuminate\Http\Request;
@@ -65,5 +66,41 @@ class CommentsController extends Controller
     public function getAllComments(Request $request, Comments $comments, $id)
     {
         return Comments::find($id);
+    }
+
+    public function getPostCom()
+    {
+        return BlogComment::all();
+    }
+
+    public function getSingleCom(Request $request, BlogComment $blogComment, $id)
+    {
+        return BlogComment::find($id);
+    }
+
+    public function Postcom(Request $request, BlogComment $blogComment, $id)
+    {
+        // return $request->all();
+        $comment = new BlogComment;
+        $comment->user_id = Auth::id();
+        $comment->comment = $request->comment;
+        $comment->blog_id = $id;
+        $comment->save();
+        return $comment;
+    }
+
+
+    public function getImgBlog(Request $request, BlogComment $blogComment, $id)
+    {
+        $blogs = BlogComment::where('id', $id)->get();
+        foreach ($blogs as $blog) {
+            $image = $blog->image;
+        }
+        return $image;
+    }
+
+    public function getBlogC(Request $request, BlogComment $blogComment, $id)
+    {
+        return BlogComment::where('blog_id', $id)->get();;
     }
 }
