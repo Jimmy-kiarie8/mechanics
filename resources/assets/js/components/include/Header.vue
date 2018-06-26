@@ -47,27 +47,51 @@
             </div>
           </div>
         </router-link>
+        <router-link to="/users" class="list__tile list__tile--link">
+          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
+          <div class="list__tile__content">
+            <div class="list__tile__title">
+              Manage Users
+            </div>
+          </div>
+        </router-link>
         <router-link to="/home" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
+          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">info_outline</i></div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Manage Mechanics
             </div>
           </div>
         </router-link>
-        <router-link to="/resume" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
+        <router-link to="/jobs" class="list__tile list__tile--link">
+          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">store</i></div>
           <div class="list__tile__content">
             <div class="list__tile__title">
-              Manage Resume
+              Manage Jobs
             </div>
           </div>
         </router-link>
-        <router-link to="/users" class="list__tile list__tile--link">
+        <router-link to="/jobRequest" class="list__tile list__tile--link">
+          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">store</i></div>
+          <div class="list__tile__content">
+            <div class="list__tile__title">
+              Job Requests
+            </div>
+          </div>
+        </router-link>
+        <router-link to="/subscribers" class="list__tile list__tile--link">
+          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">email</i></div>
+          <div class="list__tile__content">
+            <div class="list__tile__title">
+              Manage Subscribers
+            </div>
+          </div>
+        </router-link>
+        <router-link to="/customers" class="list__tile list__tile--link">
           <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
           <div class="list__tile__content">
             <div class="list__tile__title">
-              Manage Users
+              Manage Clients
             </div>
           </div>
         </router-link>
@@ -90,17 +114,15 @@ app
 :color="color"
 :clipped-left="$vuetify.breakpoint.lgAndUp"
 fixed
-> 
-<v-toolbar-title style="width: 300px" class="ml-0 pl-3" v-for="item, key in company" :key="company.id">
+>
+<v-toolbar-title style="width: 300px" class="ml-0 pl-3">
   <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-  <!-- {{item.company_name}}
-  <img :src="item.logo" alt="" style="width: 60px; height: 60px; border-radius: 50%;"> -->
+  {{user.name}}
+  <img :src="user.profile" alt="" style="width: 60px; height: 60px; border-radius: 50%;">
 </v-toolbar-title>
 <v-spacer></v-spacer>
 
-
-
-<v-menu
+<v-menu 
 offset-x
 :close-on-content-click="false"
 :nudge-width="200"
@@ -132,8 +154,7 @@ v-model="menu"
 
 
 </v-menu>
-<!-- <v-icon @click.stop="right = !right" style="cursor: pointer">apps</v-icon> -->
-<v-icon @click.stop="drawer = !drawer" style="cursor: pointer">apps</v-icon>
+<v-icon @click.stop="right = !right" style="cursor: pointer">apps</v-icon>
 <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
 </v-toolbar>
 </v-app>
@@ -160,7 +181,7 @@ export default {
       color: 'indigo',
       dialog: false,
       changeColor: 'item.color',
-      drawer: false,
+      drawer: true,
       drawerRight: false,
       right: null,
       menu: false,
@@ -168,14 +189,7 @@ export default {
       company: {},
     }
   },
-  mounted() {  
-    /*axios.post('getLogo')
-    .then((response) => {
-      this.company = response.data
-    })
-    .catch((error) => {
-        this.errors = error.response.data.errors
-      })*/
+  mounted() { 
   },
   }
   </script>

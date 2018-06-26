@@ -195,7 +195,7 @@ methods: {
   showAlert(){
     this.message = 'Successifully Added';
     this.snackbar = true;
-    this.color = black;
+    this.color = 'indigo';
   },
   del(key, id) {
     if (confirm('Are you sure you want to delete this item?')) {

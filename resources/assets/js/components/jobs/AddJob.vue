@@ -1,6 +1,6 @@
 <template>
   <v-layout row justify-center>
-    <v-dialog v-model="openAddRequest" persistent max-width="700px">
+    <v-dialog v-model="openAddRequest" persistent max-width="500px">
       <v-card>
         <v-card-title fixed>
           <span class="headline">Give Job</span>
@@ -21,6 +21,7 @@
                           Job description 
                         </div>
                       </v-text-field>
+                    <small class="has-text-danger" v-if="errors.description">{{ errors.description[0] }}</small>
                     </v-flex>
                   </v-layout>
             </v-container>

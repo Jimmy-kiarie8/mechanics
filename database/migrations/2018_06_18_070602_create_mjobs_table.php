@@ -19,6 +19,7 @@ class CreateMjobsTable extends Migration
             $table->integer('mechanic_id')->nullable();
             $table->integer('client_id')->nullable();
             $table->integer('rating')->nullable();
+            $table->string('request')->nullable();
             $table->text('description')->nullable();
             $table->boolean('status')->nullable();
             $table->timestamps();

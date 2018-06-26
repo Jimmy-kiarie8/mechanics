@@ -19,7 +19,7 @@
                       label="Full name"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
@@ -29,7 +29,7 @@
                       label="Email"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.email">{{ errors.email[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.email">{{ errors.email[0] }}</small>
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
@@ -38,7 +38,7 @@
                       label="Id Number"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.email">{{ errors.email[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.id_no">{{ errors.id_no[0] }}</small>
                     </v-flex>
                     <v-flex  xs12 sm6>
                       <v-text-field
@@ -53,7 +53,7 @@
                         value=""
                         class="input-group--focused"
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.password">{{ errors.password[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.password">{{ errors.password[0] }}</small>
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
@@ -63,7 +63,7 @@
                       label="Address"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.address">{{ errors.address[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.address">{{ errors.address[0] }}</small>
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
@@ -73,7 +73,7 @@
                       label="City"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.city">{{ errors.city[0] }}</small>
                     </v-flex>
                     <v-flex xs12 sm6>
                        <v-slider
@@ -95,7 +95,7 @@
                       label="Country"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.country">{{ errors.country[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.country">{{ errors.country[0] }}</small>
                     </v-flex>
                     <v-flex xs12 sm6>
                       <v-text-field
@@ -105,7 +105,7 @@
                       label="Phone"
                       required
                       ></v-text-field>
-                    <!-- <small class="has-text-danger" v-if="errors.phone">{{ errors.phone[0] }}</small> -->
+                    <small class="has-text-danger" v-if="errors.phone">{{ errors.phone[0] }}</small>
                     </v-flex>
                     <div class="form-group">
                       <vue-google-autocomplete
@@ -156,7 +156,7 @@ export default {
         city: '',
         country: '',
         id_no: '',
-        age: null,
+        // age: null,
       })
     return{
       address: '',
@@ -195,8 +195,8 @@ export default {
 
       })
       .catch((error) => {
-        this.errors = error.response.data.errors
         this.loading=false
+        this.errors = error.response.data.errors
       })
     },
     resetForm () {

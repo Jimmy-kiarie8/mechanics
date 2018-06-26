@@ -6,6 +6,7 @@ use App\BlogComment;
 use App\Comments;
 use App\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\CommentRequest;
 use Illuminate\Support\Facades\Auth;
 
 class CommentsController extends Controller
@@ -26,7 +27,7 @@ class CommentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function comments(Request $request, Comments $comments, $id)
+    public function comments(CommentRequest $request, Comments $comments, $id)
     {
         // return $request->all();
         $comment = new Comments;
@@ -78,7 +79,7 @@ class CommentsController extends Controller
         return BlogComment::find($id);
     }
 
-    public function Postcom(Request $request, BlogComment $blogComment, $id)
+    public function Postcom(CommentRequest $request, BlogComment $blogComment, $id)
     {
         // return $request->all();
         $comment = new BlogComment;
@@ -102,5 +103,10 @@ class CommentsController extends Controller
     public function getBlogC(Request $request, BlogComment $blogComment, $id)
     {
         return BlogComment::where('blog_id', $id)->get();;
+    }
+
+    public function fewComments()
+    {
+        return Comments::orderBy('created_at', 'ASC')->limit(5)->get();
     }
 }

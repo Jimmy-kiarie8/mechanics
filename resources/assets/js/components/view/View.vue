@@ -1,23 +1,81 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card card-default">
-                    <div class="card-header">Example Component</div>
-
-                    <div class="card-body">
-                        I'm an example component.
-                    </div>
+<div class="wrapper">
+    <div class="row">
+      <div class="col-md-3 col-sm-6">
+          <div class="card card-stats">
+              <div class="card-header card-header-warning card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">content_copy</i>
                 </div>
+                <p class="card-category">Used Space</p>
+                <h3 class="card-title">49/50 <small>GB</small></h3>
             </div>
-        </div>
-    </div>
+            <div class="card-footer">
+              <div class="stats">
+                  <i class="material-icons text-danger">warning</i>
+                  <a href="#pablo">Get More Space...</a>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="col-md-3 col-sm-6">
+      <div class="card card-stats">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">store</i>
+          </div>
+          <p class="card-category">Revenue</p>
+          <h3 class="card-title">$34,245</h3>
+      </div>
+      <div class="card-footer">
+          <div class="stats">
+              <i class="material-icons">date_range</i> Last 24 Hours
+          </div>
+      </div>
+  </div>
+</div>
+  <div class="col-md-3 col-sm-6">
+      <div class="card card-stats">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">store</i>
+          </div>
+          <p class="card-category">Revenue</p>
+          <h3 class="card-title">$34,245</h3>
+      </div>
+      <div class="card-footer">
+          <div class="stats">
+              <i class="material-icons">date_range</i> Last 24 Hours
+          </div>
+      </div>
+  </div>
+</div>
+  <div class="col-md-3 col-sm-6">
+      <div class="card card-stats">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">store</i>
+          </div>
+          <p class="card-category">Revenue</p>
+          <h3 class="card-title">$34,245</h3>
+      </div>
+      <div class="card-footer">
+          <div class="stats">
+              <i class="material-icons">date_range</i> Last 24 Hours
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+
+</div>
 </template>
 
 <script>
-    export default {
-        mounted() {
-            console.log('Component mounted.')
-        }
-    }
+export default {
+mounted() {
+    console.log('Component mounted.')
+}
+}
 </script>

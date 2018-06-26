@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Jobs;
+use App\User;
+use App\Http\Requests\JobRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,7 +16,7 @@ class JobsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(JobRequest $request)
     {
         // return $request->all();
         $job = new Jobs;
@@ -72,4 +74,48 @@ class JobsController extends Controller
     {
         return json_decode(json_encode(Jobs::where('user_id', $id)->get()), true);
     }
+
+    public function getJobInfo(Request $request, Jobs $user, $id)
+    {
+        /*$jobs = User::with(['jobs'])->where('id', Auth::id())->get();
+        $pass_job = [];
+        $jobArray = [];
+        $preA = [];
+        foreach ($jobs as $job) {
+            $jobArray[] = $job->jobs;
+            $arrayJ = json_decode(json_encode($jobArray), true);
+            // var_dump($arrayJ); die;
+            foreach ($arrayJ as $element) {
+                $preA[] = array_prepend($element, Auth::user()->name);
+            }
+            $pass_job[] = $preA;
+            var_dump($pass_job); die;
+        }
+        foreach ($pass_job as $value) {
+            $job_info = $value;
+        }
+        return $job_info;*/
+        // $user = User::where('id', $client_id);
+        return Jobs::where('user_id', Auth::id())->get();
+    }
+
+    public function updateReqFalse(Request $request, Jobs $user, $id)
+    {
+        // return $request->all();
+        $job = Jobs::find($id);
+        $job->respo = $request->respo;
+        $job->save();
+        return $job;
+    }
+
+    public function updateReqTrue(Request $request, Jobs $user, $id)
+    {
+        // return $request->all();
+        $job = Jobs::find($id);
+        $job->respo = $request->respo;
+        $job->save();
+        return $job;
+    }
 }
+
+

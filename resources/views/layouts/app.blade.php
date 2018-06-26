@@ -26,6 +26,9 @@
     {{-- <link href="{{ asset('css/bulma.css') }}" rel="stylesheet"> --}}
     <link href="{{ asset('css/base.css') }}" rel="stylesheet">
     <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
+    
+    <link href="{{ asset('dash/css/dash.css') }}" rel="stylesheet" />
+    <link href="{{ asset('dash/css/demo.css') }}" rel="stylesheet" />
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -57,6 +60,7 @@
         </main>
     </div>
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('dash/js/dashboard.js') }}"></script>
 <script src="{{ asset('vuetify/js/vuetify.js') }}"></script>
 </body>
 </html>

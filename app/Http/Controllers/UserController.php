@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mechanics;
 use App\User;
+use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -17,7 +18,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
         // return $request->all();
         $location_new = $request->location;
@@ -146,7 +147,7 @@ class UserController extends Controller
      */
     public function destroy(Mechanics $mechanics)
     {
-        //
+        return Mechanics::find($mechanics->id)->delete();
     }
 
     public function getUsers()
@@ -196,5 +197,12 @@ class UserController extends Controller
         $user->save();
         return $user;
 
+    }
+
+
+
+    public function fewUsers()
+    {
+        return User::orderBy('rating', 'DESC')->limit(5)->get();
     }
 }

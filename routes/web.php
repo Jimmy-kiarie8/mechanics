@@ -11,6 +11,10 @@
 |
 */
 
+// JWT
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.request');
+Route::post('password/reset', 'Auth\ResetPasswordController@postReset')->name('password.reset');
+
 
 Route::get('/cv', function () {
     return view('Cv');
@@ -30,12 +34,11 @@ Auth::routes();
 Route::group(['middleware' => ['auth']], function () {
 	Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('/manage', function () {
-	    	/*$newrole = Auth::user()->roles;
+	    	$newrole = Auth::user()->roles;
 	    	foreach ($newrole as $name) {
 	    		$rolename = $name->name;
-	    	}*/
-	    	// return view('welcome', compact('rolename', 'company_logo'));
-	    	return view('welcome');
+	    	}
+	    	return view('welcome', compact('rolename'));
 	});
 
 	Route::get('manage/${name}', function ()
@@ -53,6 +56,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/getUsers', 'UserController@getUsers')->name('getUsers');
 	Route::post('/profile/{id}', 'UserController@profile')->name('profile');
 	Route::post('/userUpdate', 'UserController@userUpdate')->name('userUpdate');
+	Route::post('/fewUsers', 'UserController@fewUsers')->name('fewUsers');
 
 
 	Route::post('/attachments/store', 'HomeController@store')->name('store-attachments');
@@ -67,6 +71,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::post('/comments/{id}', 'CommentsController@comments')->name('comments');
 	Route::post('/getComments', 'CommentsController@getComments')->name('getComments');
+	Route::post('/fewComments', 'CommentsController@fewComments')->name('fewComments');
 	Route::post('/getAllComments/${id}', 'CommentsController@getAllComments')->name('getAllComments');
 
 
@@ -86,8 +91,10 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::post('/updateJobFalse/{id}', 'JobsController@updateJobFalse')->name('updateJobFalse');
 	Route::post('/updateJobTrue/{id}', 'JobsController@updateJobTrue')->name('updateJobTrue');
-	// Route::post('/getJobs/{id}', 'JobsController@getJobs')->name('getJobs');
 	Route::post('/getJobs/{id}', 'JobsController@getJobs')->name('getJobs');
+	Route::post('/getJobInfo/{id}', 'JobsController@getJobInfo')->name('getJobInfo');
+	Route::post('/updateReqTrue/{id}', 'JobsController@updateReqTrue')->name('updateReqTrue');
+	Route::post('/updateReqFalse/{id}', 'JobsController@updateReqFalse')->name('updateReqFalse');
 
 
 	
@@ -96,6 +103,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/getsubscribers', 'EmailController@getsubscribers')->name('getsubscribers');
 	Route::post('/subscribe', 'EmailController@subscribe')->name('subscribe');
 	Route::post('/refresh/{id}', 'EmailController@refresh')->name('refresh');
+	Route::post('/fewSubs', 'EmailController@fewSubs')->name('fewSubs');
 
 
 	Route::get('/slack', 'EmailController@slack');
@@ -116,3 +124,5 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/getBlogC/{id}', 'CommentsController@getBlogC')->name('getBlogC');
 
 });
+
+// });

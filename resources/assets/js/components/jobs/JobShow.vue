@@ -23,10 +23,10 @@
                 <th>Created On</th>
                 <th>#</th>
               </thead>
-              <tbody v-if="AllJobsDisp.length === 1">
+              <!-- <tbody v-if="AllJobsDisp.length === 1">
                 <tr>
-                  <td v-for="user in users" v-if="user.id === jobs.mechanic_id">{{ user.name }}</td>
-                  <td v-for="user in users" v-if="user.id === jobs.client_id">{{ user.name }}</td>
+                  <td v-for="user in users" v-if="user.id === AllJobsDisp.mechanic_id">{{ user.name }}</td>
+                  <td v-for="user in users" v-if="user.id === AllJobsDisp.client_id">{{ user.name }}</td>
                   <td>{{ AllJobsDisp.description }}</td>
                   <td>{{ AllJobsDisp.rating }}</td>
                   <td>{{ AllJobsDisp.created_at }}</td>
@@ -36,9 +36,9 @@
                     </v-btn>
                   </td> 
                 </tr>
-              </tbody>
-              <tbody v-else="AllJobsDisp.length > 1" v-for="jobs, key in AllJobsDisp" :key="jobs.id">
-                <tr>
+              </tbody> -->
+              <tbody v-if="openRequest">
+                <tr v-for="jobs, key in AllJobsDisp" :key="jobs.id">
                   <td v-for="user in users" v-if="user.id === jobs.mechanic_id">{{ user.name }}</td>
                   <td v-for="user in users" v-if="user.id === jobs.client_id">{{ user.name }}</td>
                   <td>{{ jobs.description }}</td>

@@ -130,4 +130,9 @@ class EmailController extends Controller
         $subscribers = Subscriber::onlyTrashed()->get();
         return $subscribers;
     }
+
+    public function fewSubs()
+    {
+        return Subscriber::orderBy('created_at', 'ASC')->limit(5)->get();
+    }
 }

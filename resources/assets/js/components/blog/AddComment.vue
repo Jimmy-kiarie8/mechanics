@@ -21,6 +21,7 @@
                           Comment 
                         </div>
                       </v-text-field>
+                      <small class="has-text-danger" v-if="errors.comment">{{ errors.comment[0] }}</small>
                     </v-flex>
                   </v-layout>
                 </v-container>

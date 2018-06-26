@@ -2,13 +2,16 @@
 
 namespace App;
 
+// use Laravel\Passport\HasApiTokens;
 use App\Notifications\verifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    // use HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +23,16 @@ class User extends Authenticatable
         'current_status', 'current_location', 'cv', 'good_coduct', 'rating', 'verifyToken'
     ];
 
+
+
+    /**
+     * The roles that belong to the user.
+     */
+    public function roles() {
+        return $this->belongsToMany('App\Role');
+    }
+
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -38,4 +51,28 @@ class User extends Authenticatable
     {
         $this->notify(new verifyEmail($this));
     }
+
+    public function jobs()
+    {
+        return $this->hasMany('App\Jobs', 'user_id');
+    }
+    /**
+         * Get the identifier that will be stored in the subject claim of the JWT.
+         *
+         * @return mixed
+         */
+        public function getJWTIdentifier()
+        {
+            return $this->getKey();
+        }
+
+        /**
+         * Return a key value array, containing any custom claims to be added to the JWT.
+         *
+         * @return array
+         */
+        public function getJWTCustomClaims()
+        {
+            return [];
+        }
 }
