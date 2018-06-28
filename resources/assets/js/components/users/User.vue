@@ -1,53 +1,53 @@
 <template>
  <div>
-  <v-dialog v-model="commdialog2" max-width="800px" persistent>
-    <v-card>
-      <v-card-title>
-        Customer Feedback
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" @submit.prevent="update">
-          <v-container grid-list-xl fluid>
-            <v-layout wrap>
-                <star-rating  :increment="0.01" v-model="feedback.rating" :star-size="20"></star-rating>
-                <v-flex xs12>
-                  <v-text-field
-                  v-model="feedback.comment"
-                  color="blue"
-                  multi-line
-                  >
-                  <div slot="label">
-                    Comment <small>(optional)</small>
-                  </div>
-                </v-text-field>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click.native="commdialog2 = false">Close</v-btn>
-                  <v-btn 
-                    color="blue darken-1" 
-                    flat 
-                    @click.native="commdialog"
-                    :loading="loading"
-                    :disabled="loading"
-                    >Save</v-btn>
-                </v-card-actions>
-                <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>  -->
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
-
   <v-content>
    <v-container fluid fill-height>
-    <div v-show="loader" style="text-align: center; width: 100%; margin-top: 200px;">
+    <v-layout justify-center align-center>
+    <div v-show="loader" style="text-align: center">
       <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
     </div>
-    <v-layout justify-center align-center v-show="!loader">
-     <div class="container">
+      <v-dialog v-model="commdialog2" max-width="800px" persistent>
+        <v-card>
+          <v-card-title>
+            Customer Feedback
+          </v-card-title>
+          <v-card-text>
+            <v-form ref="form" @submit.prevent="update">
+              <v-container grid-list-xl fluid>
+                <v-layout wrap>
+                    <star-rating  :increment="0.01" v-model="feedback.rating" :star-size="20"></star-rating>
+                    <v-flex xs12>
+                      <v-text-field
+                      v-model="feedback.comment"
+                      color="blue"
+                      multi-line
+                      >
+                      <div slot="label">
+                        Comment <small>(optional)</small>
+                      </div>
+                    </v-text-field>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="blue darken-1" flat @click.native="commdialog2 = false">Close</v-btn>
+                      <v-btn 
+                        color="blue darken-1" 
+                        flat 
+                        @click.native="commdialog"
+                        :loading="loading"
+                        :disabled="loading"
+                        >Save</v-btn>
+                    </v-card-actions>
+                    <!-- <small class="has-text-danger" v-if="errors.name">{{ errors.name[0] }}</small>  -->
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+     <div class="container" v-show="!loader">
        <!-- users display -->
        <div>
         <v-card-title>
@@ -77,8 +77,6 @@
         <td class="text-xs-right">{{ props.item.phone }}</td>
         <td class="text-xs-right">{{ props.item.rating }}</td>
          <td class="text-xs-right">{{ props.item.locality }}</td>
-         <!--   <td class="text-xs-right">{{ props.item.current_status }}</td> -->
-           <td class="text-xs-right">{{ props.item.status }}</td>
            <td class="justify-center layout px-0">
             <v-btn icon class="mx-0" @click="editItem(props.item)">
               <v-icon color="blue darken-2">edit</v-icon>
@@ -118,8 +116,8 @@ v-model="snackbar"
 <v-icon dark right>check_circle</v-icon>
 </v-snackbar>
 </v-content>
-<AddUser @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert"></AddUser>
-<EditUser @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem"></EditUser>
+<AddUser @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert" :Showrole="AllRoles"></AddUser>
+<EditUser @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem" @alertRequest="showAlert" :Showrole="AllRoles"></EditUser>
 <ShowUserProfile @closeRequest="close" :openProRequest="docsdialog2" :users="Allusers" :docsPass="seeDocuments"></ShowUserProfile>
 </div>
 </template>
@@ -143,12 +141,10 @@ export default {
       { text: 'Phone Number', value: 'phone' },
       { text: 'Rating', value: 'rating' },
       { text: 'Location', value: 'locality' },
-    // { text: 'Location', value: 'location' },
-    // { text: 'Current Status', value: 'current_status' },
-    { text: 'Status', value: 'status' },
     { text: 'Actions', value: 'name', sortable: false }
     ],
     feedback: {},
+    AllRoles: {},
     search: '',
     e1: true,
     loader: false,
@@ -166,6 +162,7 @@ export default {
     docNo: {},
     Alldocs: [],
     editedItem: {},
+    delItem: {},
     seeDocuments: {},
     emailRules: [
     v => {
@@ -197,20 +194,23 @@ methods: {
     this.snackbar = true;
     this.color = 'indigo';
   },
-  del(key, id) {
+  deleteItem(item) {
+    this.delItem = Object.assign({}, item)
+    this.editedIndex = this.Allusers.indexOf(item)
+    const index = this.Allusers.indexOf(item)
     if (confirm('Are you sure you want to delete this item?')) {
-      this.loader = true
-      axios.delete(`/users/${id}`)
+      // this.loader = true
+      axios.delete(`/users/${this.delItem.id}`)
       .then((response) => {
         this.Allusers.splice(index, 1)
-        this.loader = false
+        // this.loader = false
         this.message = 'deleted successifully'
-        this.color = 'red'
+        this.color = 'indigo'
         this.snackbar = true
       })
       .catch((error) => {
         this.errors = error.response.data.errors
-        this.loader = false
+        // this.loader = false
         this.message = 'something went wrong'
         this.color = 'red'
         this.snackbar = true
@@ -265,6 +265,14 @@ mounted() {
     this.errors = error.response.data.errors
   })
 
+
+  axios.post('getRoles')
+  .then((response) => {
+    this.AllRoles = response.data
+  })
+  .catch((error) => {
+    this.errors = error.response.data.errors
+  })
 
   axios.post('getCategory')
   .then((response) => {

@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-content>
-      <div v-show="loader" style="text-align: center; width: 100%;">
-        <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
-      </div>
-      <v-container fluid fill-height v-show="!loader">
+      <v-container fluid fill-height>
         <v-layout justify-center align-center>
-          <v-layout row wrap>
+          <div v-show="loader" style="text-align: center; width: 100%;">
+            <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
+          </div>
+          <v-layout row wrap v-show="!loader">
             <v-flex xs12 sm4>
               <v-card>
                 <img :src="avatar"style="width: 100px; height: 100px; border-radius: 50%; text-align:center; margin-top 70px;margin-left-100px">

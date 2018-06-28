@@ -14,7 +14,7 @@
           </v-toolbar-items>
         </v-toolbar>
           <div class="container">
-            <table class="table table-hover table-stripped">
+            <table class="table table-hover table-stripped" v-if="openRequest">
               <thead>
                 <th>Mechanic</th>
                 <th>Client</th>
@@ -37,7 +37,7 @@
                   </td> 
                 </tr>
               </tbody> -->
-              <tbody v-if="openRequest">
+              <tbody>
                 <tr v-for="jobs, key in AllJobsDisp" :key="jobs.id">
                   <td v-for="user in users" v-if="user.id === jobs.mechanic_id">{{ user.name }}</td>
                   <td v-for="user in users" v-if="user.id === jobs.client_id">{{ user.name }}</td>

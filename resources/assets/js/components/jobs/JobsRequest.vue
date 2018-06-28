@@ -2,11 +2,11 @@
  <div>
   <v-content>
    <v-container fluid fill-height>
+    <v-layout justify-center align-center>
     <div v-show="loader" style="text-align: center">
       <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
     </div> 
-    <v-layout justify-center align-center v-show="!loader" >
-     <div class="container">
+     <div class="container" v-show="!loader">
        <div v-show="!loader">
         <v-card-title>
          <v-spacer></v-spacer>

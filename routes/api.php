@@ -14,6 +14,31 @@ use Illuminate\Http\Request;
 */
 
 Route::group([
+    'prefix' => 'auth'
+], function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('signup', 'AuthController@signup');
+  	Route::get('signup/activate/{token}', 'AuthController@signupActivate');
+    Route::group([
+      'middleware' => 'auth:api'
+    ], function() {
+        Route::get('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+    });
+});
+
+// password Reset
+Route::group([
+    'namespace' => 'Auth',
+    'middleware' => 'api',
+    'prefix' => 'password'
+], function () {
+    Route::post('create', 'PasswordResetController@create');
+    Route::get('find/{token}', 'PasswordResetController@find');
+    Route::post('reset', 'PasswordResetController@reset');
+});
+
+/*Route::group([
 
     // 'middleware' => 'api',
     'prefix' => 'auth'
@@ -35,19 +60,20 @@ Route::group([
 		Route::post('logout', 'AuthController@logout');
 	});
 
-});
+});*/
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::group([
 
-    'middleware' => 'api',
+      'middleware' => 'auth:api',
+    // 'middleware' => 'api',
     'prefix' => 'getData'
 
 ], function () {
 
-	Route::post('/getUsers', 'UserController@getUsers')->name('getUsers');
+	Route::get('/getUsers', 'UserController@getUsers')->name('getUsers');
 		Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('/manage', function () {
 	    	/*$newrole = Auth::user()->roles;
@@ -70,8 +96,9 @@ Route::group([
 	Route::resource('blog', 'BlogController');
 
 
-	Route::post('/getUsers', 'UserController@getUsers')->name('getUsers');
 	Route::post('/profile/{id}', 'UserController@profile')->name('profile');
+
+	Route::get('/getUsers', 'UserController@getUsers')->name('getUsers');
 	Route::post('/userUpdate', 'UserController@userUpdate')->name('userUpdate');
 
 
@@ -80,14 +107,14 @@ Route::group([
 	Route::delete('/attachments/', 'HomeController@deleteAttachment')->name('delete-attachment');
 	Route::post('/attachments/categories', 'HomeController@getCategories')->name('pull-categories');
 	Route::post('/categories', 'HomeController@storeCategories');
-	Route::post('/getCategory', 'HomeController@getCategory');
+	Route::get('/getCategory', 'HomeController@getCategory');
 
 	Route::post('/download', 'CategoryController@download')->name('download');
-	Route::post('/getLogedDocs', 'CategoryController@getLogedDocs')->name('getLogedDocs');
+	Route::get('/getLogedDocs', 'CategoryController@getLogedDocs')->name('getLogedDocs');
 
 	Route::post('/comments/{id}', 'CommentsController@comments')->name('comments');
-	Route::post('/getComments', 'CommentsController@getComments')->name('getComments');
-	Route::post('/getAllComments/${id}', 'CommentsController@getAllComments')->name('getAllComments');
+	Route::get('/getComments', 'CommentsController@getComments')->name('getComments');
+	Route::get('/getAllComments/${id}', 'CommentsController@getAllComments')->name('getAllComments');
 
 
 
@@ -98,16 +125,16 @@ Route::group([
 	Route::post('/skills/{id}', 'ResumeController@skills')->name('skills');
 
 
-	Route::post('/getExperience', 'ResumeController@getExperience')->name('getExperience');
-	Route::post('/getEducation', 'ResumeController@getEducation')->name('getEducation');
-	Route::post('/getPersonal', 'ResumeController@getPersonal')->name('getPersonal');
-	Route::post('/getSkills', 'ResumeController@getSkills')->name('getSkills');
-	Route::post('/getMeckSkills', 'ResumeController@getMeckSkills')->name('getMeckSkills');
+	Route::get('/getExperience', 'ResumeController@getExperience')->name('getExperience');
+	Route::get('/getEducation', 'ResumeController@getEducation')->name('getEducation');
+	Route::get('/getPersonal', 'ResumeController@getPersonal')->name('getPersonal');
+	Route::get('/getSkills', 'ResumeController@getSkills')->name('getSkills');
+	Route::get('/getMeckSkills', 'ResumeController@getMeckSkills')->name('getMeckSkills');
 
 	Route::post('/updateJobFalse/{id}', 'JobsController@updateJobFalse')->name('updateJobFalse');
 	Route::post('/updateJobTrue/{id}', 'JobsController@updateJobTrue')->name('updateJobTrue');
-	Route::post('/getJobs/{id}', 'JobsController@getJobs')->name('getJobs');
-	Route::post('/getJobInfo/{id}', 'JobsController@getJobInfo')->name('getJobInfo');
+	Route::get('/getJobs/{id}', 'JobsController@getJobs')->name('getJobs');
+	Route::get('/getJobInfo/{id}', 'JobsController@getJobInfo')->name('getJobInfo');
 	Route::post('/updateReqTrue/{id}', 'JobsController@updateReqTrue')->name('updateReqTrue');
 	Route::post('/updateReqFalse/{id}', 'JobsController@updateReqFalse')->name('updateReqFalse');
 
@@ -115,7 +142,7 @@ Route::group([
 	
 	// E-MAILS
 	Route::post('/sendmail', 'EmailController@sendmail')->name('sendmail');
-	Route::post('/getsubscribers', 'EmailController@getsubscribers')->name('getsubscribers');
+	Route::get('/getsubscribers', 'EmailController@getsubscribers')->name('getsubscribers');
 	Route::post('/subscribe', 'EmailController@subscribe')->name('subscribe');
 	Route::post('/refresh/{id}', 'EmailController@refresh')->name('refresh');
 
@@ -123,19 +150,19 @@ Route::group([
 	Route::get('/slack', 'EmailController@slack');
 	Route::get('/slacks', 'EmailController@slacks');
 
-	Route::post('/getunsubscribed', 'EmailController@getunsubscribed')->name('getunsubscribed');
+	Route::get('/getunsubscribed', 'EmailController@getunsubscribed')->name('getunsubscribed');
 
 	// Blog	
-	Route::post('/getBlog', 'BlogController@getBlog')->name('getBlog');
+	Route::get('/getBlog', 'BlogController@getBlog')->name('getBlog');
 	Route::post('/blogImage/{id}', 'BlogController@blogImage')->name('blogImage');
-	Route::post('/getImgBlog/{id}', 'BlogController@getImgBlog')->name('getImgBlog');
+	Route::get('/getImgBlog/{id}', 'BlogController@getImgBlog')->name('getImgBlog');
 	Route::post('/BlogImage', 'BlogController@BlogImage')->name('BlogImage');
 
 	// Blog	Comments
-	Route::post('/getPostCom', 'CommentsController@getPostCom')->name('getPostCom');
-	Route::post('/getSingleCom/{id}', 'CommentsController@getSingleCom')->name('getSingleCom');
+	Route::get('/getPostCom', 'CommentsController@getPostCom')->name('getPostCom');
+	Route::get('/getSingleCom/{id}', 'CommentsController@getSingleCom')->name('getSingleCom');
 	Route::post('/Postcom/{id}', 'CommentsController@Postcom')->name('Postcom');
-	Route::post('/getBlogC/{id}', 'CommentsController@getBlogC')->name('getBlogC');
+	Route::get('/getBlogC/{id}', 'CommentsController@getBlogC')->name('getBlogC');
 });
 
 

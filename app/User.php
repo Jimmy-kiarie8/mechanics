@@ -2,16 +2,18 @@
 
 namespace App;
 
-// use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
 use App\Notifications\verifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+// use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable
 {
-    use Notifiable;
-    // use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, SoftDeletes;
+
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +22,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'location', 'id_no', 'status', 
-        'current_status', 'current_location', 'cv', 'good_coduct', 'rating', 'verifyToken'
+        'current_status', 'current_location', 'cv', 'good_coduct', 'rating', 
+        'verifyToken', 'active', 'activation_token'
     ];
 
 
@@ -39,7 +42,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'activation_token',
     ];
 
     public function verified()

@@ -2,15 +2,15 @@
  <div>
   <v-content>
    <v-container fluid fill-height>
-    <v-layout justify-center align-center>
-    <div v-show="loader" style="text-align: center">
+    <div v-show="loader" style="text-align: center; width: 100%; margin-top: 200px;">
       <v-progress-circular :width="3" indeterminate color="red" style="margin: 1rem"></v-progress-circular>
-    </div> 
-     <div class="container" v-show="!loader">
+    </div>
+    <v-layout justify-center align-center v-show="!loader">
+     <div class="container">
        <!-- users display -->
-       <div v-show="!loader">
+       <div>
         <v-card-title>
-         <!-- <v-btn color="primary" flat @click="openUser">Add Job</v-btn> -->
+         <v-btn color="primary" flat @click="openUser">Add Client</v-btn>
          <v-spacer></v-spacer>
          <v-text-field
          v-model="search"
@@ -22,7 +22,7 @@
        </v-card-title>
        <v-data-table
        :headers="headers"
-       :items="Allusers"
+       :items="AllClients"
        :search="search"
        counter
        class="elevation-1"
@@ -36,15 +36,16 @@
         <td class="text-xs-right">{{ props.item.phone }}</td>
         <td class="text-xs-right">{{ props.item.rating }}</td>
          <td class="text-xs-right">{{ props.item.locality }}</td>
-         <!--   <td class="text-xs-right">{{ props.item.current_status }}</td> -->
-           <td class="text-xs-right">{{ props.item.status }}</td>
            <td class="justify-center layout px-0">
-            <v-btn icon class="mx-0" @click="giveJob(props.item)">
-              <v-icon color="blue darken-2">add</v-icon>
+            <v-btn icon class="mx-0" @click="editItem(props.item)">
+              <v-icon color="blue darken-2">edit</v-icon>
             </v-btn>
-            <v-btn icon class="mx-0" @click="ShowJobSt(props.item)">
-              <v-icon color="blue darken-2">visibility</v-icon>
+            <v-btn icon class="mx-0" @click="routePush(props.item)">
+              <v-icon color="blue darken-2">account_circle</v-icon>
             </v-btn>
+          <v-btn icon class="mx-0" @click="deleteItem(props.item)">
+            <v-icon color="pink darken-2">delete</v-icon>
+          </v-btn>          
         </td> 
       </template>
       <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -70,20 +71,20 @@ v-model="snackbar"
 <v-icon dark right>check_circle</v-icon>
 </v-snackbar>
 </v-content>
-<AddJob @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert" :editedItemCon="editedItem"></AddJob>
-<EditJob @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem"></EditJob>
-<JobShow @closeRequest="close" :AllJobsDisp="JobsDisp" :openRequest="JobDialog" :users="Allusers" :editedItemCon="editedItem"></JobShow>
+<AddClients @closeRequest="close" :openAddRequest="dispAdd" @alertRequest="showAlert" :Showrole="AllRoles"></AddClients>
+<EditClients @closeRequest="close" :openEditRequest="pdialog2" :editedItemCon="editedItem" :Showrole="AllRoles"></EditClients>
+<Profile @closeRequest="close" :openEditRequest="proDialog" :ProfileDetail="routerItem" :doneJobs="JobsDone" :users="Allusers"></Profile>
 </div>
 </template>
 
 <script>
-let AddJob = require('./AddJob.vue')
-let JobShow = require('./JobShow.vue')
-let EditJob = require('./EditJob.vue')
+let AddClients = require('./AddClients.vue')
+let EditClients = require('./EditClients.vue')
+let Profile = require('./Profile.vue')
 export default {
   props: ['user', 'role'],
   components: {
-    AddJob, JobShow, EditJob
+    AddClients, EditClients, Profile
   }, 
   data() {
     return{
@@ -95,27 +96,31 @@ export default {
       { text: 'Phone Number', value: 'phone' },
       { text: 'Rating', value: 'rating' },
       { text: 'Location', value: 'locality' },
-    // { text: 'Location', value: 'location' },
-    // { text: 'Current Status', value: 'current_status' },
-    { text: 'Status', value: 'status' },
     { text: 'Actions', value: 'name', sortable: false }
     ],
-    feedback: {},
+    AllRoles: {},
     search: '',
     e1: true,
     loader: false,
+    loading: false,
     dispAdd: false,
-    JobDialog: false,
+    docsdialog2: false,
     pdialog2: false,
+    proDialog: false,
     snackbar: false,
+    commdialog2: false,
     pdialog: false,
     timeout: 5000,
     color: '',
     message: '',
-    Allusers: [],
+    AllClients: [],
+    Allusers: {},
+    docNo: {},
     Alldocs: [],
     editedItem: {},
-    JobsDisp: [],
+    JobsDone: {},
+    routerItem: {},
+    seeDocuments: {},
     emailRules: [
     v => {
       return !!v || 'E-mail is required'
@@ -131,21 +136,29 @@ export default {
   }
 },
 methods: {  
-  giveJob(item) {
-    this.editedItem = Object.assign({}, item)
-    this.editedIndex = this.Allusers.indexOf(item)
-    // console.log(this.editedItem);
-    this.dispAdd = true
+  openUser(){
+    this.dispAdd  = true
   },
-  ShowJobSt(item) {
+  editItem(item) {
     this.editedItem = Object.assign({}, item)
-    this.editedIndex = this.Allusers.indexOf(item)
+    this.editedIndex = this.AllClients.indexOf(item)
     // console.log(this.editedItem);
-    this.JobDialog = true
+    this.pdialog2 = true
+  },
+  /*routePush(item) {
+    this.routerItem = Object.assign({}, item)
+    this.editedIndex = this.AllClients.indexOf(item)
+    // router.push({ path: '/user', params: { userId }}) // -> /user
+    router.push({ path: `/clients/${this.routerItem.id}` }) // -> /user/123
+  },*/
+  routePush(item) {
+    this.routerItem = Object.assign({}, item)
+    this.editedIndex = this.AllClients.indexOf(item)
+    this.proDialog = true
 
-    axios.post(`getJobs/${this.editedItem.id}`)
+    axios.post(`getJobs/${this.routerItem.id}`)
     .then((response) => {
-      this.JobsDisp = response.data
+      this.JobsDone = response.data
     })
     .catch((error) => {
       this.errors = error.response.data.errors
@@ -157,20 +170,61 @@ methods: {
     this.snackbar = true;
     this.color = 'indigo';
   },
-  close() {
-    this.dispAdd= this.JobDialog = this.pdialog2 = false
+  
+  deleteItem(item) {
+    this.delItem = Object.assign({}, item)
+    this.editedIndex = this.AllClients.indexOf(item)
+    const index = this.AllClients.indexOf(item)
+    if (confirm('Are you sure you want to delete this item?')) {
+      // this.loader = true
+      axios.delete(`/users/${this.delItem.id}`)
+      .then((response) => {
+        this.AllClients.splice(index, 1)
+        // this.loader = false
+        this.message = 'deleted successifully'
+        this.color = 'indigo'
+        this.snackbar = true
+      })
+      .catch((error) => {
+        this.errors = error.response.data.errors
+        // this.loader = false
+        this.message = 'something went wrong'
+        this.color = 'red'
+        this.snackbar = true
+      })
+    }
   },
+  close() {
+    this.dispAdd= this.docsdialog2 = this.pdialog2 = this.proDialog = false
+  },
+
 },
 mounted() {
   this.loader=true
-  axios.post('getUsers')
+  axios.post('getClient')
   .then((response) => {
-    this.Allusers = response.data
+    this.AllClients = response.data
   })
   .catch((error) => {
     this.errors = error.response.data.errors
   })
 
+  axios.post('getUsers')
+  .then((response) => {
+    this.AllClients = response.data
+  })
+  .catch((error) => {
+    this.errors = error.response.data.errors
+  })
+
+
+  axios.post('getRoles')
+  .then((response) => {
+    this.AllRoles = response.data
+  })
+  .catch((error) => {
+    this.errors = error.response.data.errors
+  })
 
   axios.post('getCategory')
   .then((response) => {
@@ -178,8 +232,8 @@ mounted() {
     this.loader=false
   })
   .catch((error) => {
-    this.errors = error.response.data.errors
     this.loader=false
+    this.errors = error.response.data.errors
   })
 },
  /*beforeRouteEnter(to, from, next) {

@@ -8,6 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+{{-- <script src="https://cdn.jsdelivr.net/npm/vue-instantsearch@1.7.0/dist/vue-instantsearch.js"></script> --}}
 
     <link rel="manifest" href="{{ asset('js/manifest.json') }}">
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,7 +19,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="msapplication-starturl" content="/">
 
-    
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
@@ -26,7 +27,7 @@
     {{-- <link href="{{ asset('css/bulma.css') }}" rel="stylesheet"> --}}
     <link href="{{ asset('css/base.css') }}" rel="stylesheet">
     <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
-    
+
     <link href="{{ asset('dash/css/dash.css') }}" rel="stylesheet" />
     <link href="{{ asset('dash/css/demo.css') }}" rel="stylesheet" />
 
@@ -34,7 +35,7 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    
+
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->

@@ -179,13 +179,13 @@ export default{
 		},
 	},
 	mounted() {
-		axios.post('getJobs')
+		/*axios.post('getJobs')
 		.then((response) => {
 			this.AllJobs = response.data
 		})
 		.catch((error) => {
 			this.errors = error.response.data.errors
-		})
+		})*/
 
 		axios.post('getComments')
 		.then((response) => {

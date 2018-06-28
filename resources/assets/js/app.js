@@ -64,11 +64,12 @@ let myProfile = require('./components/users/profile.vue')
 let myResume = require('./components/resum/Resume.vue')
 let myResumeHome = require('./components/resum/Home.vue')
 let myJob = require('./components/jobs/Job.vue')
-let myMech = require('./components/mechanics/Mechanics.vue')
 let mysubsicriber = require('./components/emails/Subscribe.vue');
 let myBlog = require('./components/blog/Blog.vue');
 let myBlogPost = require('./components/blog/BlogPost.vue');
 let myJobRequest = require('./components/jobs/JobsRequest.vue');
+let myClient = require('./components/clients/Clients.vue')
+let myMechanic = require('./components/mechanics/Mechanic.vue')
 // let myLogin = require('./components/Auth/Login.vue');
 // let myRegister = require('./components/Auth/Register.vue');
 
@@ -80,7 +81,8 @@ const routes = [
 	{path: '/resume', component: myResume},
 	{path: '/home', component: myResumeHome},
 	{path: '/jobs', component: myJob},
-	{path: '/mechanics', component: myMech},
+    {path: '/clients', component: myClient},
+    {path: '/mechanics', component: myMechanic},
 	{path: '/subscribers', component: mysubsicriber },
 	{path: '/blogs', component: myBlog },
 	{path: '/blogpost', component: myBlogPost },
@@ -109,8 +111,8 @@ const app = new Vue({
     router,
     components: {
     	StarRating, myView, myUser, myHeader, myDocs, myProfile, myResume, 
-    	myResumeHome, myJob, myMech, mysubsicriber, myBlog, myBlogPost,
-    	myJobRequest
+    	myResumeHome, myJob, myClient, mysubsicriber, myBlog, myBlogPost,
+    	myJobRequest, myMechanic
     	// , myRegister, myLogin
 
     }

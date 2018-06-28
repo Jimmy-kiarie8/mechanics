@@ -57,6 +57,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/profile/{id}', 'UserController@profile')->name('profile');
 	Route::post('/userUpdate', 'UserController@userUpdate')->name('userUpdate');
 	Route::post('/fewUsers', 'UserController@fewUsers')->name('fewUsers');
+	Route::post('/getRoles', 'UserController@getRoles')->name('getRoles');
+	Route::post('/getClient', 'UserController@getClient')->name('getClient');
+	Route::post('/getMechanics', 'UserController@getMechanics')->name('getMechanics');
+	Route::post('/getAdmin', 'UserController@getAdmin')->name('getAdmin');
 
 
 	Route::post('/attachments/store', 'HomeController@store')->name('store-attachments');

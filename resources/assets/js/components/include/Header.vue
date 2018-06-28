@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <!-- <div> -->
     <v-app id="inspire">
       <!-- temporary -->
-      <v-navigation-drawer
+      <!-- <v-navigation-drawer
       right
       temporary
       v-model="right"
       fixed
       >  
-  </v-navigation-drawer>
+  </v-navigation-drawer> -->
   <!-- temporary -->
 
 
@@ -40,7 +40,9 @@
 
       <v-card>
         <router-link to="/" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">home</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">home</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Dashboard
@@ -48,7 +50,9 @@
           </div>
         </router-link>
         <router-link to="/users" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">account_circle</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Manage Users
@@ -56,7 +60,9 @@
           </div>
         </router-link>
         <router-link to="/home" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">info_outline</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">info_outline</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Manage Mechanics
@@ -64,7 +70,9 @@
           </div>
         </router-link>
         <router-link to="/jobs" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">store</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">store</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Manage Jobs
@@ -72,7 +80,9 @@
           </div>
         </router-link>
         <router-link to="/jobRequest" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">store</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">assignment_ind</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Job Requests
@@ -80,23 +90,39 @@
           </div>
         </router-link>
         <router-link to="/subscribers" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">email</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">email</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Manage Subscribers
             </div>
           </div>
         </router-link>
-        <router-link to="/customers" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
+        <router-link to="/clients" class="list__tile list__tile--link">
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">account_circle</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Manage Clients
             </div>
           </div>
         </router-link>
+        <router-link to="/mechanics" class="list__tile list__tile--link">
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">build</v-icon>
+          </div>
+          <div class="list__tile__content">
+            <div class="list__tile__title">
+              Manage Mechanics
+            </div>
+          </div>
+        </router-link>
         <router-link to="/profile" class="list__tile list__tile--link">
-          <div class="list__tile__action"><i aria-hidden="true" class="icon material-icons">account_circle</i></div>
+          <div class="list__tile__action">
+            <v-icon color="black darken-2">settings</v-icon>
+          </div>
           <div class="list__tile__content">
             <div class="list__tile__title">
               Account Setting
@@ -163,9 +189,10 @@ v-model="menu"
 
 <script>
 export default {
-  props: ['user', 'role', 'logo'],
+  props: ['user', 'role'],
   data () {
     return{
+      color: 'red',
       items: [
       { color: 'red', text: 'Red' },
       { color: 'green', text: 'Green' },

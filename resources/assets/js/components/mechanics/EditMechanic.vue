@@ -106,14 +106,6 @@
             ></v-text-field>
             <!-- <small class="has-text-danger" v-if="errors.phone">{{ errors.phone[0] }}</small> -->
           </v-flex>
-          <div class="form-group col-md-6">
-            <label for="password" class="col-md-8 col-form-label text-md-right">Role</label>
-            <div class="col-md-12">
-                <select class="custom-select" v-model="editedItemCon.role">
-                  <option v-for="element in Showrole" data-subtext="" :value="element.id">{{element.name}}</option>
-                </select>
-            </div>
-          </div>
               <!-- <div class="form-group">
                 <vue-google-autocomplete
                 ref="address"
@@ -147,7 +139,7 @@
 
 <script>
 export default {
-  props: ['editedItemCon', 'openEditRequest', 'Showrole'],
+  props: ['editedItemCon', 'openEditRequest'],
   data() {
     return{
       e1: true,
